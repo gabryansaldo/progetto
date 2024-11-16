@@ -3,8 +3,6 @@ import streamlit as st
 import icecream as ic
 import gzip
 
-#cd 
-
 # carico il dataset
 url = "../progetto/Gabry.csv"
 table = pl.read_csv(url,separator=",")
@@ -19,25 +17,22 @@ table = table.with_columns(
 def lista_modalità(table,variabile):
     return table.select(variabile).unique().sort(variabile)
 
+# scelgo se vedere totale o solo delle cose selezionate
+def selezione_pass(table):
+    show_totals = st.checkbox(f"Mostra totali per ora")
+    if show_totals:
+        return hourly_pass_T(table)
+    else:
+        return hourly_pass_vi(table)
+
 # divido per orario
-def hourly_pass(table):
+def hourly_pass_T(table):
     return table.with_columns(pl.col("DATAPASSAGGIO").dt.hour().alias("ora")
-        ).group_by("ora").agg(pl.count().alias("PASSAGGI")
+        ).group_by("ora").agg(pl.len().alias("PASSAGGI")
         ).sort("ora")
-#print(hourly_pass(table))
 
-# divido per orario e valle
-def hourly_pass_valli(table):
-    lista_valli = lista_modalità(table,"NOME_VALLEPOSIZIONEIMPIANTO")
-
-    # seleziona valli
-    valli_selezionate = st.multiselect(
-        "Inserisci valle di interesse",
-        lista_valli,
-        default="Gardena - Alpe di Siusi"
-    )
-
-def hourly_pass(table):
+#divido per orario e valle/impianto
+def hourly_pass_vi(table):
     opzioni_map = {
         "valle": "NOME_VALLEPOSIZIONEIMPIANTO",
         "impianto": "NOME_IMPIANTO"
@@ -48,15 +43,11 @@ def hourly_pass(table):
 
     lista_mod = lista_modalità(table,c)
 
-    show_totals = st.checkbox(f"Mostra totali per ora per {c_aka}")
-
     mod_selezionate = st.multiselect(
         f"Inserisci {c_aka} di interesse",
         lista_mod,
         help="Seleziona uno o più valori per filtrare i dati"
     )
-
-    show_totals = st.checkbox(f"Mostra totali per ora per {c_aka}")
 
     filtered_table = (
         table.filter(pl.col(c).is_in(mod_selezionate))
@@ -81,28 +72,15 @@ def hourly_pass(table):
         .fill_null(0)  # Riempi i valori nulli con 0
         .sort("ora")
     )
-
-    if show_totals:
-        # Se "Mostra totali" è selezionato, somma tutti gli impianti o valli per ciascuna ora
-        result = result.with_columns(
-            pl.col(result.columns).exclude("ora").sum().alias("Totale")
-        )
-        st.write("Totali per tutte le valli/impianti selezionati:")
-    else:
-        st.write(f"Dati raggruppati per {c_aka}:")
-
     return result
 
-result = hourly_pass(table)
+result = selezione_pass(table)
 
 if not result.is_empty():
     st.write(result)
 
-
-# st.line_chart(hourly_pass_valli_selezionate(table),
-#     x="NOME_VALLEPOSIZIONEIMPIANTO",
-#     y="T_HAB",
-#     color="geo"
-# )
-#print(table)
-
+# IDEE
+#
+# specificare che il dataset si riferisce ad un giorno solo ed eseguire una verica a schermo
+# in hourly_pass_vi migliorare la selezione tra valle e impianto
+# grafico per ora e minuti per impianto...
