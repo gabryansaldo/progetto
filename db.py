@@ -1,7 +1,6 @@
 import polars as pl
 import streamlit as st
 import icecream as ic
-import gzip
 
 # carico il dataset
 url = "../progetto/Gabry.csv"
@@ -67,7 +66,7 @@ def hourly_pass_vi(table):
         .pivot(
             values="PASSAGGI",  # I valori da mostrare nelle celle
             index="ora",  # Righe
-            columns=c  # Colonne
+            on=c  # Colonne
         )
         .fill_null(0)  # Riempi i valori nulli con 0
         .sort("ora")
@@ -83,4 +82,4 @@ if not result.is_empty():
 #
 # specificare che il dataset si riferisce ad un giorno solo ed eseguire una verica a schermo
 # in hourly_pass_vi migliorare la selezione tra valle e impianto
-# grafico per ora e minuti per impianto...
+# grafico per ora e minuti per impianto... (forse non ha senso)
