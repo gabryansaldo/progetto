@@ -1,19 +1,15 @@
 import polars as pl
 import streamlit as st
-from utils import Importa_Tab
-from utils import lista_modalità
-from utils import sidebar
-
+from utils import lista_modalita
+from utils import load_dataset
+from utils import get_opzioni_map
 
 # scelgo se vedere totale o solo delle cose selezionate
 def selezione_pass(table):
     st.title("Analisi dei Passaggi Orari")
     st.markdown("""
-        Questa dashboard consente di:
-        - Analizzare il numero di passaggi per ora su base totale o filtrando per valli e impianti specifici.
-        - Visualizzare i dati aggregati in modo semplice e interattivo.
-
-        Utilizza le opzioni disponibili per esplorare i dati e ottenere insights utili.
+        Questa dashboard permette di analizzare i passaggi per ora, totali o filtrati per valli e impianti.  
+        Scegli tra le opzioni disponibili per esplorare i dati.
     """)
     
     st.subheader("Seleziona Modalità di Analisi")
@@ -26,20 +22,21 @@ def selezione_pass(table):
     
     show_totals = st.checkbox(f"Mostra totali per ora")
     if show_totals:
-        table = table.select(["DATAPASSAGGIO"])
-        return hourly_pass_T(table)
-    else:
-        opzioni_map = {
-            "Valle": "NOME_VALLEPOSIZIONEIMPIANTO",
-            "Impianto": "NOME_IMPIANTO"
-        }
-        lista_colonne_utili = ["DATAPASSAGGIO"]
+        hourly_pass_T(table.select(["DATAPASSAGGIO"]))
 
-        for key in opzioni_map:
-            lista_colonne_utili.append(opzioni_map[key])
+    opzioni_map = get_opzioni_map()
+    lista_colonne_utili = ["DATAPASSAGGIO"]
 
-        table = table.select(lista_colonne_utili)
-        return hourly_pass_vi(table,opzioni_map)
+    for key in opzioni_map:
+        lista_colonne_utili.append(opzioni_map[key])
+    
+    missing_columns = [col for col in lista_colonne_utili if col not in table.columns]
+    if missing_columns:
+        st.error(f"Mancano le seguenti colonne nel dataset: {', '.join(missing_columns)}")
+        return False
+
+    table = table.select(lista_colonne_utili)
+    hourly_pass_vi(table,opzioni_map)
 
 # divido per orario
 def hourly_pass_T(table):
@@ -57,7 +54,6 @@ def hourly_pass_vi(table,opzioni_map):
     - **Valle**: Visualizza il numero di passaggi per ciascuna valle.  
     - **Impianto**: Mostra il numero di passaggi per ogni impianto.  
     """)
-    #c_aka=list(opzioni_map.keys())[0]
     c_aka = st.segmented_control(
         "Raggruppamento:",
         options=list(opzioni_map.keys()),
@@ -66,7 +62,7 @@ def hourly_pass_vi(table,opzioni_map):
     )
     c = opzioni_map[c_aka]
 
-    lista_mod = lista_modalità(table,c)
+    lista_mod = lista_modalita(table,c)
 
     st.subheader("Filtra i Dati")
     st.markdown(f"""
@@ -103,10 +99,11 @@ def hourly_pass_vi(table,opzioni_map):
         .fill_null(0)  # Riempi i valori nulli con 0
         .sort("ora")
     )
+
     if not result.is_empty():
         st.write(result)
 
-#main
-def Analisi_oraria():
-    st.session_state.passaggi=Importa_Tab("Passaggi.csv")
+#funzione pagina
+def Hourly_Analysis():
+    load_dataset()
     selezione_pass(st.session_state.passaggi)
