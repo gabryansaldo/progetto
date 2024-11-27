@@ -1,8 +1,6 @@
 import streamlit as st
 import polars as pl
-from utils import load_dataset
-from utils import group_by_skipass
-from utils import units_per_day
+import utils
 
 def Your_Skipass(table):
     st.title("🎟️ Cerca il tuo Skipass")
@@ -12,34 +10,37 @@ def Your_Skipass(table):
     Una volta trovato, visualizzerai i dettagli e le statistiche delle tue attività.
     """)
 
-    codice = st.text_input("Inserisci il codice dello skipass:", placeholder="Es. 161-106-23720")
+    form1=st.form(key="your_skipass")
+    codice = form1.text_input("Inserisci il codice dello skipass:","161-389-25165", placeholder="Es. 161-389-25165")
+    form1.form_submit_button("Submit")
+    
+    skipass_data = table.filter(
+        pl.col("CODICEBIGLIETTO") == codice
+    )
 
-    if codice:
-        skipass_data = table.filter(
-            pl.col("CODICEBIGLIETTO") == codice
-        )
+    if skipass_data.is_empty():
+        form1.warning("Nessun dato trovato per questo codice skipass.")
+    else:
+        form1.subheader("Dettagli del tuo Skipass")
+        form1_exp=form1.expander("Visualizza passaggi dettagliati")
+        with form1_exp:
+            form1_exp.write(skipass_data)
 
-        if skipass_data.is_empty():
-            st.warning("Nessun dato trovato per questo codice skipass.")
-        else:
-            st.subheader("Dettagli del tuo Skipass")
-            st.write(skipass_data)
+        form1.subheader("Statistiche principali")
+        n_passaggi = len(skipass_data)
+        primo_passaggio = skipass_data["DATAPASSAGGIO"].min()
+        ultimo_passaggio = skipass_data["DATAPASSAGGIO"].max()
 
-            st.subheader("Statistiche principali")
-            n_passaggi = len(skipass_data)
-            primo_passaggio = skipass_data["DATAPASSAGGIO"].min()
-            ultimo_passaggio = skipass_data["DATAPASSAGGIO"].max()
+        form1.write(f"**Numero di passaggi totali:** {n_passaggi}")
+        form1.write(f"**Primo passaggio:** {primo_passaggio.strftime('%d-%m-%Y %H:%M:%S')}")
+        form1.write(f"**Ultimo passaggio:** {ultimo_passaggio.strftime('%d-%m-%Y %H:%M:%S')}")
+        form1.write(f"**Numero valli:** {utils.conta_mod(skipass_data,"ID_VALLEPOSIZIONEIMPIANTO")}")
+        form1.write(f"**Numero impianti diversi:** {utils.conta_mod(skipass_data,"ID_IMPIANTO")}")
+        form1.write(f"**Tipo biglietto:** {utils.lista_modalita(skipass_data,"NOME_TIPOBIGLIETTO").to_series()[0]}")
+        form1.write(f"**Tipo persona:** {utils.lista_modalita(skipass_data,"NOME_TIPOPERSONA").to_series()[0]}")
+        form1.write(f"**Validità Skipass:** {utils.lista_modalita(skipass_data,"NOME_VALLEVALIDITABIGLIETTO").to_series()[0]}")
 
-            st.markdown(f"**Numero di passaggi totali:** {n_passaggi}")
-            st.markdown(f"**Primo passaggio:** {primo_passaggio.strftime('%d-%m-%Y %H:%M:%S')}")
-            st.markdown(f"**Ultimo passaggio:** {ultimo_passaggio.strftime('%d-%m-%Y %H:%M:%S')}")
 
 def Your_SkipassPage():
-    load_dataset()
-    #Your_Skipass(st.session_state.passaggi)
-    #st.write(st.session_state.passaggi.sort("CODICEBIGLIETTO"))
-    st.write(group_by_skipass(st.session_state.passaggi))
-
-
-# Icona per la pagina
-# Puoi usare l'emoji: 🎟️ (ticket) oppure trovare un'icona SVG da un repository open-source.
+    utils.load_dataset()
+    Your_Skipass(st.session_state.passaggi)
