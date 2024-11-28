@@ -1,6 +1,8 @@
 import polars as pl
 import streamlit as st
+import time
 
+#se il dataset non è ancora caricato richiama read_dataset
 def load_dataset():
     if "passaggi" not in st.session_state:
         st.session_state.passaggi = read_dataset("Passaggi.csv")
@@ -9,6 +11,7 @@ def load_dataset():
         return False
     return True
 
+#importo il dataset
 @st.cache_data
 def read_dataset(url):
     try:
@@ -52,6 +55,8 @@ def sidebar(table):
     st.sidebar.write(f"""
     - **Totale passaggi:** {n}
     """)
+
+    commento()
 
 #dizionario opzioni scelta
 def get_opzioni_map():
@@ -97,5 +102,29 @@ def conta_tipo(table,var):
 
 #tabella più facile da vedere
 def fancy_table(table):
-    columns_to_select = [col for col in table.columns if "%ID%" not in col]
+    columns_to_select = [col for col in table.columns if "ID_" not in col.upper()]
     return table.select(columns_to_select)
+
+#commento sull'applicazione
+def commento():
+    with st.sidebar.popover("Lascia un commento"):
+        st.write("funzione al momento disattivata")
+        # user_input = st.text_area(f"Lascia una recensione")
+        # user_stars = st.feedback("stars")
+        # if st.button(f"Salva"):
+        #     if user_input.strip():
+        #         with open("others\commenti.txt", "a") as file:
+        #             file.write("Commento: " + user_input + "\n" + str(user_stars+1) + "\n\n")
+        #         st.success("Il tuo commento è stato salvato con successo!")
+        #     else:
+        #         st.warning("Il campo è vuoto. Per favore, inserisci del testo.")
+
+#scrivi il testo lentamente
+def stream_data(string):
+    for word in string.split(" "):
+        yield word + " "
+        time.sleep(0.1)
+    
+
+
+

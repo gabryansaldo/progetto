@@ -2,18 +2,12 @@ import streamlit as st
 import utils
 
 def Welcome():
-    utils.load_dataset()  
-    st.write(f"""
+    utils.load_dataset()
+    st.write_stream(utils.stream_data(f"""
         # Benvenuto sul mio sito di analisi dei passaggi 👋
-        inizio dataset:
-    """)
-    st.write(utils.fancy_table(st.session_state.passaggi.head(10)))
-    st.feedback("stars")
+    """))
 
     st.write(f"""
-    ## 1. Benvenuto nella nostra Applicazione di Analisi Skipass!
-    Titolo principale che accoglie l'utente.
-    
     ---
 
     ## 2. Cosa Puoi Fare Qui?

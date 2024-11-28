@@ -9,6 +9,8 @@ from functions.test import Test
 
 #main
 def main():
+    utils.load_dataset()
+    utils.sidebar(st.session_state.passaggi)
     pages = {
         "Home": [st.Page(Welcome, title="Home", icon="🏠", default=True),],
         "Analisi": [
@@ -22,8 +24,7 @@ def main():
     }
     st.session_state.pg = st.navigation(pages)
     st.session_state.pg.run()
-    utils.load_dataset()
-    utils.sidebar(st.session_state.passaggi)
+    
 
 if __name__ == "__main__":
     main()
@@ -31,6 +32,8 @@ if __name__ == "__main__":
 
 
 # IDEE
+
+# - tab nella pagina welcome con sezioni
 
 # - selezione giorno in ogni funzione
 

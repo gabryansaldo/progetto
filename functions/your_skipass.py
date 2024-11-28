@@ -24,7 +24,7 @@ def Your_Skipass(table):
         form1.subheader("Dettagli del tuo Skipass")
         form1_exp=form1.expander("Visualizza passaggi dettagliati")
         with form1_exp:
-            form1_exp.write(skipass_data)
+            form1_exp.write(utils.fancy_table(skipass_data))
 
         form1.subheader("Statistiche principali")
         n_passaggi = len(skipass_data)
