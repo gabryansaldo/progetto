@@ -38,7 +38,6 @@ def lista_modalita(table,variabile):
 
 #sidebar con info utili
 def sidebar(table):
-    st.logo("others\logo.webp")
     if table.is_empty():
         st.sidebar.warning("Nessun dato disponibile nel dataset.")
         return
