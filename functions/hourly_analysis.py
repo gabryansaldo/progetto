@@ -53,11 +53,13 @@ def hourly_pass_vi(table,opzioni_map):
     - **Valle**: Visualizza il numero di passaggi per ciascuna valle.  
     - **Impianto**: Mostra il numero di passaggi per ogni impianto.  
     """)
-    c_aka = st.segmented_control("",
+    c_aka = st.segmented_control("Seleziona:",
         options=list(opzioni_map.keys()),
         default=list(opzioni_map.keys())[0],
         help=f"Scegli raggruppamento da eseguire tra i seguenti"
     )
+    if c_aka == None:
+        c_aka=list(opzioni_map.keys())[0]
     c = opzioni_map[c_aka]
 
     lista_mod = utils.lista_modalita(table,c)
@@ -105,7 +107,6 @@ def hourly_pass_vi(table,opzioni_map):
             )
         )
         form1.altair_chart(chart, use_container_width=True)
-
 
 #funzione pagina
 def Hourly_Analysis():

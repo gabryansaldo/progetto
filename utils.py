@@ -1,11 +1,12 @@
 import polars as pl
 import streamlit as st
 import time
+import base64
 
 #se il dataset non è ancora caricato richiama read_dataset
 def load_dataset():
     if "passaggi" not in st.session_state:
-        st.session_state.passaggi = read_dataset("Passaggi.csv")
+        st.session_state.passaggi = read_dataset("DatiPassaggi.csv.gz")
     if st.session_state.passaggi.is_empty():
         st.error("Errore nel caricamento del dataset.")
         return False
@@ -15,7 +16,7 @@ def load_dataset():
 @st.cache_data
 def read_dataset(url):
     try:
-        passaggi = pl.read_csv(url, separator=",")
+        passaggi = pl.read_csv(url, separator=",", truncate_ragged_lines=True)
         st.session_state.passaggi = CambiaFormatoData(passaggi)
     except Exception as e:
         st.error(f"Errore durante il caricamento del dataset: {e}")
@@ -37,6 +38,7 @@ def lista_modalita(table,variabile):
 
 #sidebar con info utili
 def sidebar(table):
+    st.logo("others\logo.webp")
     if table.is_empty():
         st.sidebar.warning("Nessun dato disponibile nel dataset.")
         return
@@ -53,7 +55,7 @@ def sidebar(table):
         st.sidebar.write(f"- **Date disponibili:** {data_min} - {data_max}")
     
     st.sidebar.write(f"""
-    - **Totale passaggi:** {n}
+    - **Totale passaggi:** {n:,}
     """)
 
     commento()
@@ -125,6 +127,9 @@ def stream_data(string):
         yield word + " "
         time.sleep(0.1)
     
-
-
+#cambio formato immagine
+def get_base64(file_path):
+    with open(file_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 

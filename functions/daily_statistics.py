@@ -31,7 +31,7 @@ def pies_chart(tab):
         .mark_text(radius=0, size=30)
         .encode(
             alt.Text("sum(numero)"),
-            color=alt.value("yellow")
+            color=alt.value("red")
         )
     )
 
