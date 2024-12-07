@@ -9,6 +9,11 @@ import polars as pl
 
 def Test():
     a=1
+    b=[2,4]
+    b.append(a)
+    st.write(b)
+
+
 #######################################
 
 def summary_with_chart(table, group_col, value_col="CODICEBIGLIETTO"):

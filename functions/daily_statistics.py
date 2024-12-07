@@ -26,6 +26,7 @@ def pies_chart(tab):
             alt.Color("NOME_TIPOPERSONA")
         )
     )
+    
     total_text = (
         alt.Chart(tab)
         .mark_text(radius=0, size=30)
@@ -42,12 +43,13 @@ def pies_chart(tab):
 
 def tipo_pers(table):
     tab_pers=utils.conta_tipo(table,"NOME_TIPOPERSONA")
-    st.write(tab_pers)
+    #st.dataframe(tab_pers)
     pies_chart(tab_pers)
     
 
 def Daily_Statistics():
     utils.load_dataset()
-    st.write(utils.units_per_day(st.session_state.passaggi))
-    st.write(utils.group_by_skipass(st.session_state.passaggi))
+    st.dataframe(utils.units_per_day(st.session_state.passaggi))
+    st.dataframe(utils.pass_per_day(st.session_state.passaggi))
+    st.dataframe(utils.group_by_skipass(st.session_state.passaggi))
     tipo_pers(st.session_state.passaggi)

@@ -5,7 +5,7 @@ import utils
 
 # scelgo se vedere totale o solo delle cose selezionate
 def selezione_pass(table):
-    st.title("Analisi dei Passaggi Orari")
+    st.title("🕓 Analisi dei Passaggi Orari")
     st.markdown("""
         Questa dashboard permette di analizzare i passaggi per ora, totali o filtrati per valli e impianti.  
         Scegli tra le opzioni disponibili per esplorare i dati.
@@ -95,7 +95,7 @@ def hourly_pass_vi(table,opzioni_map):
     )
 
     if not result.is_empty():
-        form1.write(result)
+        st.write(result)
 
         chart = (
             alt.Chart(raggr)
@@ -106,7 +106,7 @@ def hourly_pass_vi(table,opzioni_map):
                 alt.Color(c)
             )
         )
-        form1.altair_chart(chart, use_container_width=True)
+        st.altair_chart(chart, use_container_width=True)
 
 #funzione pagina
 def Hourly_Analysis():
