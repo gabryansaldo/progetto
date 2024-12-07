@@ -74,7 +74,7 @@ def group_by_skipass(table):
         .with_columns(pl.col("DATAPASSAGGIO").dt.strftime("%Y-%m-%d").alias("Data"))
         .group_by(["Data", "CODICEBIGLIETTO","NOME_TIPOPERSONA"])
         .agg([pl.count("CODICEBIGLIETTO").alias("passaggi")])
-        .sort(["Data", "passaggi"], descending=[False, True])   
+        .sort(["passaggi"], descending=[True])   
     )
 
 #persone per ciascun giorno
@@ -153,6 +153,31 @@ def tab_day_hour(table):
     return (
         table
         .with_columns(pl.col("DATAPASSAGGIO").dt.strftime("%Y-%m-%d").alias("Data"))
-        .with_columns(pl.col("DATAPASSAGGIO").dt.strftime("%H:%M:%S").alias("Ora"))
-        .sort(["Data","Ora"])
+        .sort("DATAPASSAGGIO")
     )
+
+#metti sfondo con url
+def background(url):
+    bg_image = get_base64(url)
+
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{bg_image}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+
+#chiedi giorno e filtra tabella per giorno o totale
+def filter_day(table):
+    tab=tab_day_hour(table)
+    day_list=lista_modalita(tab,"Data")
+    day_list.insert(0,"Totale")
+    selected_day=st.selectbox("Selezionare:  ",options=day_list)
+    if selected_day=="Totale": 
+        return tab
+    else:
+        return tab.filter(pl.col("Data")==selected_day)
