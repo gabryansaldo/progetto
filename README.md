@@ -4,3 +4,5 @@
  progetto.streamlit.app
 
 appena si apre informazioni in alto tabs
+
+modalità chiara o scura

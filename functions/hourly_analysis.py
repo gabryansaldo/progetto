@@ -16,10 +16,10 @@ def selezione_pass(table):
     st.markdown("""
         Scegli tra le opzioni disponibili per esplorare i dati.
     """)
-
     show_totals = st.checkbox(f"Mostra totali per ora")
     if show_totals:
         hourly_pass_T(table.select(["DATAPASSAGGIO"]))
+    st.divider()
 
     opzioni_map = utils.get_opzioni_map()
     lista_colonne_utili = ["DATAPASSAGGIO"]
@@ -100,19 +100,20 @@ def hourly_pass_vi(table,opzioni_map):
         .sort("ora")
     )
 
+
     if not result.is_empty():
         st.write(result)
-
-        chart = (
-            alt.Chart(raggr)
-            .mark_line()
-            .encode(
-                alt.X("ora").scale(zero=False),
-                alt.Y("PASSAGGI"),
-                alt.Color(c)
+        if len(mod_selezionate)!=0 or c_aka!=list(opzioni_map.keys())[1]:
+            chart = (
+                alt.Chart(raggr)
+                .mark_line()
+                .encode(
+                    alt.X("ora").scale(zero=False),
+                    alt.Y("PASSAGGI"),
+                    alt.Color(c).scale(scheme="paired")
+                )
             )
-        )
-        st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, use_container_width=True)
 
 #funzione pagina
 def Hourly_Analysis():

@@ -56,11 +56,17 @@ def Welcome():
             <style>
             .header {
                 font-size: 24px;
-                font-weight: normal;
+                font-weight: bold;
                 text-align: left;
                 margin-top: 10px;
                 color: black;
                 animation: fadeIn 2s ease-in-out;
+            }
+            .box {
+                border-radius: 20px; 
+                padding: 16px; 
+                background-color: rgba(200, 218, 221, 0.80); 
+                margin-bottom: 16px;
             }
 
             @keyframes fadeIn {
@@ -69,48 +75,58 @@ def Welcome():
             }
             </style>
         """, unsafe_allow_html=True)
-
+        
         st.markdown("""
-        <div class="header">Introduzione</div>
-        <p style="color: black">
-            Introduzione generale: "Questa applicazione ti permette di esplorare, analizzare e visualizzare i dati relativi agli skipass per scoprire informazioni utili."
-        </p>
+        <div class="box">
+            <div class="header">Introduzione</div>
+            <p style="color: black">
+                Introduzione generale: "Questa applicazione ti permette di esplorare, analizzare e visualizzare i dati relativi agli skipass per scoprire informazioni utili."
+            </p>
+        </div>
         """,unsafe_allow_html=True)
 
         st.divider()
 
         st.markdown("""
-        <div class="header">Cosa Puoi Fare Qui?</div>
-        <p style="color: black">
-            analisi orarie, giornaliere, vedere tue statistiche e info su tutto
-        </p>
+        <div class="box">
+            <div class="header">Cosa puoi fare qui?</div>
+            <p style="color: black">
+                analisi orarie, giornaliere, vedere tue statistiche e info su tutto
+            </p>
+        </div>
         """,unsafe_allow_html=True)
 
         st.divider()
 
         st.markdown("""
-        <div class="header">Informazioni sul dataset</div>
-        <p style="color: black">
-            come ho ottenuto, dati che contiene (giorni)
-        </p>
+        <div class="box">
+            <div class="header">Informazioni sul dataset</div>
+            <p style="color: black">
+                come ho ottenuto, dati che contiene (giorni)
+            </p>
+        </div>
         """,unsafe_allow_html=True)
 
         st.divider()
 
         st.markdown("""
-        <div class="header">come iniziare</div>
-        <p style="color: black">
-            sidebar
-        </p>
+        <div class="box">
+            <div class="header">come iniziare</div>
+            <p style="color: black">
+                sidebar
+            </p>
+        </div>
         """,unsafe_allow_html=True)
 
         st.divider()
 
         st.markdown("""
-        <div class="header">cose usate? </div>
-        <p style="color: black">
-            librerie?
-        </p>
+        <div class="box">
+            <div class="header">cose usate?</div>
+            <p style="color: black">
+                librerie?
+            </p>
+        </div>
         """,unsafe_allow_html=True)
 
     

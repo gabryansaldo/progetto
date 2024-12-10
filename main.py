@@ -33,12 +33,12 @@ if __name__ == "__main__":
 
 # IDEE
 
-# - tab nella pagina welcome con sezioni
+# - modificare testo nelle info in welcome
 
-# - selezione giorno in ogni funzione
-
-# - st.feedback("stars")
-
-# - divido in group by data
+# - colorspace
 
 # - barra inferiore come enri
+
+# - analisi per tipo di biglietto
+
+# - analisi per valle (impianto più usato, pos. classifica valli, npassaggi, persone)

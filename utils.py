@@ -3,6 +3,7 @@ import streamlit as st
 import time
 import base64
 import pandas as pd
+import altair as alt
 
 #se il dataset non è ancora caricato richiama read_dataset
 def load_dataset():
@@ -72,7 +73,7 @@ def group_by_skipass(table):
     return (
         table
         .with_columns(pl.col("DATAPASSAGGIO").dt.strftime("%Y-%m-%d").alias("Data"))
-        .group_by(["Data", "CODICEBIGLIETTO","NOME_TIPOPERSONA"])
+        .group_by(["Data", "CODICEBIGLIETTO","NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"])
         .agg([pl.count("CODICEBIGLIETTO").alias("passaggi")])
         .sort(["passaggi"], descending=[True])   
     )
@@ -87,7 +88,7 @@ def pass_per_day(table):
     return (
         table
         .with_columns(pl.col("DATAPASSAGGIO").dt.strftime("%Y-%m-%d").alias("Data"))
-        .group_by("Data").agg(pl.count("CODICEBIGLIETTO").alias("Passaggi"))
+        .group_by("Data").agg(pl.count("CODICEBIGLIETTO").alias("passaggi"))
         .sort("Data")
     )
 
@@ -181,3 +182,48 @@ def filter_day(table):
         return tab
     else:
         return tab.filter(pl.col("Data")==selected_day)
+
+# grafico tipo persone
+def pies_chart(tab,raggr):
+    base_pie = (
+        alt.Chart(tab)
+        .mark_arc(
+            cornerRadius=8,
+            radius=120,
+            radius2=80
+        )
+        .encode(
+            alt.Theta("numero"),
+            alt.Color(raggr).scale(scheme="paired")
+        )
+    )
+
+    text_pie = (
+        alt.Chart(tab)
+        .mark_text(radius=140, size=15)
+        .encode(
+            alt.Text("numero"),
+            alt.Theta("numero").stack(True),
+            alt.Order(raggr),
+            alt.Color(raggr)
+        )
+    )
+    
+    total_text = (
+        alt.Chart(tab)
+        .mark_text(radius=0, size=30)
+        .encode(
+            alt.Text("sum(numero)"),
+            color=alt.value("red")
+        )
+    )
+
+    st.altair_chart(
+        base_pie + text_pie + total_text,
+        use_container_width=True
+    )
+
+# tabella tipo persone grafico tipo persone
+def chart_tipo(table,raggr):
+    tab=conta_tipo(table,raggr)
+    pies_chart(tab,raggr)
