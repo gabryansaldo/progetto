@@ -36,7 +36,6 @@ def Daily_Statistics():
     #st.dataframe(utils.pass_per_day(st.session_state.passaggi))
     
     table=utils.filter_day(st.session_state.passaggi)
-    cont=st.container(border=True)
 
     pers=utils.units_per_day(table)
     max_row_pers = pers.sort("persone", descending=True).head(1)
@@ -52,7 +51,7 @@ def Daily_Statistics():
     if len(pers)>1:
         totpers=pers["persone"].sum()
         totpas=pas["passaggi"].sum()
-        cont.markdown(f"""
+        st.markdown(f"""
             <div style="
                 font-size: 24px; 
                 font-weight: bold; 
@@ -66,7 +65,7 @@ def Daily_Statistics():
             </div>
         """, unsafe_allow_html=True)
         
-        cont.markdown(f"""
+        st.markdown(f"""
             <div style="
                 font-size: 24px; 
                 font-weight: bold; 
@@ -79,7 +78,7 @@ def Daily_Statistics():
                 Totale passaggi: <span style="color: #16A085;">{totpas}</span>
             </div>
         """, unsafe_allow_html=True)
-        cont.markdown(f"""
+        st.markdown(f"""
             <div style="
                 font-size: 24px; 
                 font-weight: bold; 
@@ -95,12 +94,12 @@ def Daily_Statistics():
             </div>
         """, unsafe_allow_html=True)
 
-        cont.write(f"Totale passaggi: {totpas}")
-        cont.write(f"Massimo delle persone: {max_pers} registrato il {max_data_pers}")
-        cont.write(f"Massimo dei passaggi: {max_pas} registrato il {max_data_pas}")
+        st.write(f"Totale passaggi: {totpas}")
+        st.write(f"Massimo delle persone: {max_pers} registrato il {max_data_pers}")
+        st.write(f"Massimo dei passaggi: {max_pas} registrato il {max_data_pas}")
     else:
-        cont.write(f"Numero delle persone registrato: {max_pers}")
-        cont.write(f"Numero dei passaggi registrato: {max_pas}")
+        st.write(f"Numero delle persone registrato: {max_pers}")
+        st.write(f"Numero dei passaggi registrato: {max_pas}")
     
 
 

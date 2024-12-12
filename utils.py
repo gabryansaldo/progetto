@@ -38,26 +38,48 @@ def lista_modalita(table,variabile):
         return []
     return table.select(variabile).unique().sort(variabile).to_series().to_list()
 
+def sidebar_box_style(text, value, background_color="rgba(213,228,224,255)", text_color="#2C3E50", value_color="rgb(42, 31, 165)"):
+    return f"""
+    <div style="
+        font-size: 18px; 
+        font-weight: bold; 
+        color: {text_color}; 
+        text-align: center; 
+        border-radius: 10px; 
+        background-color: {background_color};">
+        {text}
+        <p style="
+        color: {value_color};
+        font-size: 18px; 
+        font-weight: bold;">
+        {value}
+        </p>
+    </div>
+    """
+
 #sidebar con info utili
 def sidebar(table):
     if table.is_empty():
         st.sidebar.warning("Nessun dato disponibile nel dataset.")
         return
-    n=len(table)
+    npass=len(table)
+    npers=len(lista_modalita(table,"CODICEBIGLIETTO"))
 
     st.sidebar.header("Informazioni sul Dataset")
 
-    data_min = table["DATAPASSAGGIO"].min().strftime("%d-%m-%Y")
-    data_max = table["DATAPASSAGGIO"].max().strftime("%d-%m-%Y")
+    data_min = table["DATAPASSAGGIO"].min().strftime("%d/%m/%Y")
+    data_min
+    data_max = table["DATAPASSAGGIO"].max().strftime("%d/%m/%Y")
 
     if data_min == data_max:
-        st.sidebar.write(f"- **Data disponibile:**\n\n\t{data_min}")
+        st.sidebar.markdown(sidebar_box_style("Data disponibili:", data_min), unsafe_allow_html=True)
+
     else:
-        st.sidebar.write(f"- **Date disponibili:**\n\n\t{data_min} - {data_max}")
+        st.sidebar.markdown(sidebar_box_style("Date disponibili:", f"{data_min} - {data_max}"), unsafe_allow_html=True)
     
-    st.sidebar.write(f"""
-    - **Totale passaggi:**\n\n\t{n:,}
-    """)
+    st.sidebar.markdown(sidebar_box_style("Totale Persone:", f"{npers:,}", value_color="#16A085"), unsafe_allow_html=True)
+
+    st.sidebar.markdown(sidebar_box_style("Totale Passaggi:", f"{npass:,}", value_color="#16A085"), unsafe_allow_html=True)
 
     #commento()
 

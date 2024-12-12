@@ -46,7 +46,7 @@ def Your_Skipass(table):
                 tab_days.append(skipass_data.filter(pl.col("Data")==ggsciati[i]))
         else:
             selected_index = 0
-            selected_day="Totale"
+            selected_day=ggsciati[0]
 
         st.write("")
         primo_passaggio = tab_days[selected_index]["DATAPASSAGGIO"].min()

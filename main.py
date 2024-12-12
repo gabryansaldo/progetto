@@ -31,14 +31,25 @@ if __name__ == "__main__":
 
 
 
-# IDEE
+# DA FARE
 
 # - modificare testo nelle info in welcome
 
-# - colorspace
-
-# - barra inferiore come enri
+# - usare colorspace
 
 # - analisi per tipo di biglietto
 
-# - analisi per valle (impianto più usato, pos. classifica valli, npassaggi, persone)
+# - analisi per valle (impianto più usato, pos. classifica valli, npassaggi, persone) foto descizione
+
+# - indice di affollamento giorno (capire asse y) groupby minuto grafico
+
+# - session.state per altri dataset generici
+
+# - mappa impianti con geopandas
+
+# - usare column configuration in st.dataframe (linechartcolumn, format)
+
+# - abbellire sidebar, aggiungere tot persone
+
+# - togliere container daily analysis e lasciare tot pers. giorno/totale selezionato all'inizio aggiungere giorno record contenuto nel dataset
+
