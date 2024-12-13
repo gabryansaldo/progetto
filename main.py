@@ -53,3 +53,4 @@ if __name__ == "__main__":
 
 # - togliere container daily analysis e lasciare tot pers. giorno/totale selezionato all'inizio aggiungere giorno record contenuto nel dataset
 
+# - podio con barchart in daily

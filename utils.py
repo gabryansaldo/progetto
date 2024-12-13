@@ -38,6 +38,7 @@ def lista_modalita(table,variabile):
         return []
     return table.select(variabile).unique().sort(variabile).to_series().to_list()
 
+# definisci stile per "scatole" nella sidebar
 def sidebar_box_style(text, value, background_color="rgba(213,228,224,255)", text_color="#2C3E50", value_color="rgb(42, 31, 165)"):
     return f"""
     <div style="
@@ -249,3 +250,70 @@ def pies_chart(tab,raggr):
 def chart_tipo(table,raggr):
     tab=conta_tipo(table,raggr)
     pies_chart(tab,raggr)
+
+# grafico per podio passaggi
+def podio(tab):
+    podio = {
+    "altezza": [3,2,1],
+    "emoji": ["🥇","🥈","🥉"],
+    "posizione":[2,1,3],
+    "colore": ["#ffb900", "#cccccc", "#f7894a"]}
+
+    podio = pd.DataFrame(podio)
+    top3=pd.DataFrame(tab[:3])
+    top3["posizione"]=[2,1,3]
+
+    podio=top3.merge(podio,on="posizione")
+    podio=pl.DataFrame(podio)
+
+    podium_chart = (
+        alt.Chart(podio)
+        .mark_bar(size=235)
+        .encode(
+            alt.X("posizione:O", title="",axis=alt.Axis(labels=False)),
+            alt.Y("altezza:Q", title="",axis=alt.Axis(labels=False, grid=False)),
+            alt.Color("colore:N",scale=None),
+            tooltip=alt.value(None)
+        )
+        .properties(
+            width=400,
+            height=300 
+        )
+    )   
+    
+    pass_chart = (
+        alt.Chart(podio)
+        .mark_text(fontSize=24,baseline="top", dy=10)
+        .encode(
+            alt.X("posizione:O"),
+            alt.Y("altezza:Q"),
+            alt.Text("4:N"),
+            tooltip=alt.value(None)
+        )
+    )
+
+    emoji_chart = (
+        alt.Chart(podio)
+        .mark_text(fontSize=24,baseline="top", dy=40)
+        .encode(
+            alt.X("posizione:O"),
+            alt.Y("altezza:Q"),
+            alt.Text("emoji:N"),
+            tooltip=alt.value(None)
+        )
+    )
+
+    skipass_chart = (
+        alt.Chart(podio)
+        .mark_text(fontSize=16,baseline="top", dy=70)
+        .encode(
+            alt.X("posizione:O"),
+            alt.Y("altezza:Q"),
+            alt.Text("1:N"),
+            tooltip=alt.value(None)
+        )
+    )
+
+    st.altair_chart(
+        podium_chart + pass_chart + emoji_chart + skipass_chart,
+        use_container_width=True)

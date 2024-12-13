@@ -14,7 +14,7 @@ def Welcome():
         """,
         unsafe_allow_html=True,
     )
-    tab1, tab2 = st.tabs(["Benvenuti", "Informazioni"])
+    tab1, tab2, tab3 = st.tabs(["Benvenuti", "Informazioni","Guida"])
 
     with tab1:
         st.markdown(
@@ -26,7 +26,7 @@ def Welcome():
                 text-align: center;
                 margin-top: 50px;
                 color: black;
-                animation: fadeIn 3s ease-in-out;
+                animation: fadeIn 2s ease-in-out;
             }
 
             .subtitle {
@@ -34,7 +34,7 @@ def Welcome():
                 text-align: center;
                 margin-top: 10px;
                 color: black;
-                animation: fadeIn 5s ease-in-out;
+                animation: fadeIn 3s ease-in-out;
             }
 
             @keyframes fadeIn {
@@ -60,7 +60,7 @@ def Welcome():
                 text-align: left;
                 margin-top: 10px;
                 color: black;
-                animation: fadeIn 2s ease-in-out;
+                animation: fadeIn 1s ease-in-out;
             }
             .box {
                 border-radius: 20px; 
@@ -78,7 +78,7 @@ def Welcome():
         
         st.markdown("""
         <div class="box">
-            <div class="header">Introduzione</div>
+            <div class="header">ℹ️ Introduzione</div>
             <p style="color: black">
                 Introduzione generale: "Questa applicazione ti permette di esplorare, analizzare e visualizzare i dati relativi agli skipass per scoprire informazioni utili."
             </p>
@@ -89,18 +89,7 @@ def Welcome():
 
         st.markdown("""
         <div class="box">
-            <div class="header">Cosa puoi fare qui?</div>
-            <p style="color: black">
-                analisi orarie, giornaliere, vedere tue statistiche e info su tutto
-            </p>
-        </div>
-        """,unsafe_allow_html=True)
-
-        st.divider()
-
-        st.markdown("""
-        <div class="box">
-            <div class="header">Informazioni sul dataset</div>
+            <div class="header">📃 Informazioni sul dataset</div>
             <p style="color: black">
                 come ho ottenuto, dati che contiene (giorni)
             </p>
@@ -108,25 +97,41 @@ def Welcome():
         """,unsafe_allow_html=True)
 
         st.divider()
+    
+    with tab3:
+        st.markdown("""
+            <style>
+            .header {
+                font-size: 24px;
+                font-weight: bold;
+                text-align: left;
+                margin-top: 10px;
+                color: black;
+                animation: fadeIn 1s ease-in-out;
+            }
+            .box {
+                border-radius: 20px; 
+                padding: 16px; 
+                background-color: rgba(200, 218, 221, 0.80); 
+                margin-bottom: 16px;
+            }
+
+            @keyframes fadeIn {
+                0% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="box">
-            <div class="header">come iniziare</div>
+            <div class="header">❓ Cosa puoi fare qui?  come iniziare  lib usate</div>
             <p style="color: black">
-                sidebar
+                analisi orarie, giornaliere, vedere tue statistiche e info su tutto
             </p>
         </div>
         """,unsafe_allow_html=True)
 
-        st.divider()
-
-        st.markdown("""
-        <div class="box">
-            <div class="header">cose usate?</div>
-            <p style="color: black">
-                librerie?
-            </p>
-        </div>
-        """,unsafe_allow_html=True)
+        
 
     

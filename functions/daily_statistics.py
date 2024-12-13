@@ -2,6 +2,7 @@ import streamlit as st
 import utils
 import altair as alt
 import polars as pl
+import pandas as pd
 
 
 
@@ -32,80 +33,42 @@ def Daily_Statistics():
     utils.load_dataset()
     st.title("📅 **Analisi dei Passaggi Giornalieri**")
     st.write("Esplora i dati relativi ai passaggi giornalieri degli skipass. Puoi selezionare una data specifica per osservare i dettagli di quel giorno oppure visualizzare un'analisi complessiva di tutti i passaggi registrati.")
-    #st.dataframe(utils.units_per_day(st.session_state.passaggi))
-    #st.dataframe(utils.pass_per_day(st.session_state.passaggi))
     
-    table=utils.filter_day(st.session_state.passaggi)
+    tab=st.session_state.passaggi.select(["DATAPASSAGGIO","CODICEBIGLIETTO","NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"])
 
-    pers=utils.units_per_day(table)
+    pers=utils.units_per_day(tab)
     max_row_pers = pers.sort("persone", descending=True).head(1)
     max_data_pers = max_row_pers["Data"][0]
     max_pers = max_row_pers["persone"][0]
 
-    pas=utils.pass_per_day(table)
+    pas=utils.pass_per_day(tab)
     max_row_pas = pas.sort("passaggi", descending=True).head(1)
     max_data_pas = max_row_pas["Data"][0]
     max_pas = max_row_pas["passaggi"][0]
 
+    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
+    col1.write("**🏆 Record di persone:**")
+    col2.write(f"*{max_pers}*")
+    col3.write("Registrato il:")
+    col4.write(f"*{max_data_pers}*")
+
+    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
+    col1.write("**🏆 Record di passaggi:**")
+    col2.write(f"*{max_pas}*")
+    col3.write("Registrato il:")
+    col4.write(f"*{max_data_pas}*")
     
-    if len(pers)>1:
-        totpers=pers["persone"].sum()
-        totpas=pas["passaggi"].sum()
-        st.markdown(f"""
-            <div style="
-                font-size: 24px; 
-                font-weight: bold; 
-                color: #2C3E50; 
-                text-align: center; 
-                padding: 10px; 
-                margin: 10px 0; 
-                border-radius: 10px; 
-                background-color: #ECF0F1;">
-                Totale persone: <span style="color: #16A085;">{totpers}</span>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown(f"""
-            <div style="
-                font-size: 24px; 
-                font-weight: bold; 
-                color: #2C3E50; 
-                text-align: center; 
-                padding: 10px; 
-                margin: 10px 0; 
-                border-radius: 10px; 
-                background-color: #ECF0F1;">
-                Totale passaggi: <span style="color: #16A085;">{totpas}</span>
-            </div>
-        """, unsafe_allow_html=True)
-        st.markdown(f"""
-            <div style="
-                font-size: 24px; 
-                font-weight: bold; 
-                color: #2C3E50;
-                text-align: center;">
-                Massimo passaggi:
-                <div style="font-size: 20px; margin-top: 10px;">
-                    Data: <span style="color: #E74C3C;">{max_data_pers}</span>
-                </div>
-                <div style="font-size: 20px; margin-top: 10px;">
-                    Numero di persone: <span style="color: #E74C3C;">{max_pers}</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+    st.divider()
+    st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico")
+    table=utils.filter_day(st.session_state.passaggi)
 
-        st.write(f"Totale passaggi: {totpas}")
-        st.write(f"Massimo delle persone: {max_pers} registrato il {max_data_pers}")
-        st.write(f"Massimo dei passaggi: {max_pas} registrato il {max_data_pas}")
-    else:
-        st.write(f"Numero delle persone registrato: {max_pers}")
-        st.write(f"Numero dei passaggi registrato: {max_pas}")
-    
+    top10=utils.group_by_skipass(table)[:10]
+    st.dataframe(top10.select(["Data","CODICEBIGLIETTO","NOME_TIPOPERSONA","passaggi"]))
 
+    utils.podio(top10[:3])
 
-    st.dataframe(utils.group_by_skipass(table)[:10])
-    #utils.chart_tipo(table,"NOME_TIPOPERSONA")
-    #utils.chart_tipo(table,"NOME_TIPOBIGLIETTO")
+    # utils.chart_tipo(table,"NOME_TIPOPERSONA")
+    # utils.chart_tipo(table,"NOME_TIPOBIGLIETTO")
 
     col1,col2=st.columns(2)
     col1.markdown(f"### Top 5 Valli con più passaggi")

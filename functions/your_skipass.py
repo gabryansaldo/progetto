@@ -2,7 +2,9 @@ import streamlit as st
 import polars as pl
 import utils
 
-def Your_Skipass(table):
+def Your_SkipassPage():
+    utils.load_dataset()
+    table=st.session_state.passaggi
     st.title("🎟️ Cerca il tuo Skipass")
 
     st.write("""
@@ -81,26 +83,11 @@ def Your_Skipass(table):
         
         st.subheader("Dettagli biglietto")
         st.write("")
-        spaz,col0,col1,col2=st.columns([0.03,0.02,0.3,0.65])
-        col0.write("-")
-        col1.write(f"**Tipo biglietto:**")
-        col2.write(utils.lista_modalita(tab_days[selected_index],"NOME_TIPOBIGLIETTO")[0])
         
-        spaz,col0,col1,col2=st.columns([0.03,0.02,0.3,0.65])
-        col0.write("-")        
-        col1.write(f"**Tipo persona:**")
-        col2.write(utils.lista_modalita(tab_days[selected_index],"NOME_TIPOPERSONA")[0])
-        
-        spaz,col0,col1,col2=st.columns([0.03,0.02,0.3,0.65])
-        col0.write("-")        
-        col1.write(f"**Validità Skipass:**")
-        col2.write(utils.lista_modalita(tab_days[selected_index],"NOME_VALLEVALIDITABIGLIETTO")[0])
-        
-        spaz,col0,col1,col2=st.columns([0.03,0.02,0.3,0.65])
-        col0.write("-")        
-        col1.write(f"**Cassa di acquisto:**")
-        col2.write(utils.lista_modalita(tab_days[selected_index],"NOME_CASSA")[0])
-
+        ticket_details("Tipo biglietto","NOME_TIPOBIGLIETTO",tab_days,selected_index)
+        ticket_details("Tipo persona","NOME_TIPOPERSONA",tab_days,selected_index)
+        ticket_details("Validità Skipass","NOME_VALLEVALIDITABIGLIETTO",tab_days,selected_index)
+        ticket_details("Cassa di acquisto","NOME_CASSA",tab_days,selected_index)
 
         st.divider()
 
@@ -108,7 +95,9 @@ def Your_Skipass(table):
         with dett_exp:
             dett_exp.dataframe(utils.minimal_table(tab_days[selected_index]),use_container_width=True)
 
-
-def Your_SkipassPage():
-    utils.load_dataset()
-    Your_Skipass(st.session_state.passaggi)
+# per risparmiare righe nello scrivere i dettagli
+def ticket_details(text,var,tab,index):
+    spaz,col0,col1,col2=st.columns([0.03,0.02,0.3,0.65])
+    col0.write("-")
+    col1.write(f"**{text}:**")
+    col2.write(utils.lista_modalita(tab[index],var)[0])
