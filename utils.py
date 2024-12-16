@@ -1,6 +1,5 @@
 import polars as pl
 import streamlit as st
-import time
 import base64
 import pandas as pd
 import altair as alt
