@@ -194,7 +194,8 @@ def filter_day(table):
     tab=tab_day_hour(table)
     day_list=lista_modalita(tab,"Data")
     day_list.insert(0,"Totale")
-    selected_day=st.selectbox("Selezionare:  ",options=day_list)
+    col1,col2=st.columns([0.25,0.75])
+    selected_day=col1.selectbox("Selezionare:  ",options=day_list)
     if selected_day=="Totale": 
         return tab
     else:
@@ -202,6 +203,7 @@ def filter_day(table):
 
 # grafico tipo persone
 def pies_chart(tab,raggr):
+    alias=create_col_map()[raggr]
     base_pie = (
         alt.Chart(tab)
         .mark_arc(
@@ -210,8 +212,8 @@ def pies_chart(tab,raggr):
             radius2=80
         )
         .encode(
-            alt.Theta("numero"),
-            alt.Color(raggr).scale(scheme="paired")
+            alt.Theta("numero:Q"),
+            alt.Color(raggr+":N",title=f"{alias}").scale(scheme="rainbow")
         )
     )
 
@@ -219,10 +221,10 @@ def pies_chart(tab,raggr):
         alt.Chart(tab)
         .mark_text(radius=140, size=15)
         .encode(
-            alt.Text("numero"),
-            alt.Theta("numero").stack(True),
-            alt.Order(raggr),
-            alt.Color(raggr)
+            alt.Text("numero:Q"),
+            alt.Theta("numero:Q").stack(True),
+            alt.Order(raggr+":N"),
+            alt.Color(raggr+":N")
         )
     )
     
@@ -230,20 +232,38 @@ def pies_chart(tab,raggr):
         alt.Chart(tab)
         .mark_text(radius=0, size=30)
         .encode(
-            alt.Text("sum(numero)"),
+            alt.Text("sum(numero):Q"),
             color=alt.value("red")
         )
     )
 
-    st.altair_chart(
-        base_pie + text_pie + total_text,
-        use_container_width=True
+    return base_pie + text_pie + total_text
+
+# raggruppa giorni da 7 in poi
+def raggr_7GG(table):
+    table = table.with_columns(
+        pl.when(
+            pl.col("NOME_TIPOBIGLIETTO")
+            .str.extract(r"^(\d+)", 1)
+            .cast(pl.Int64)
+            .is_not_null()
+            & (pl.col("NOME_TIPOBIGLIETTO").str.extract(r"^(\d+)", 1).cast(pl.Int64) >= 7)
+        ).then(pl.lit("7+ Giorni"))
+        .otherwise(pl.col("NOME_TIPOBIGLIETTO"))
+        .alias("NOME_TIPOBIGLIETTO_RAGGR")
     )
 
+    table = table.group_by("NOME_TIPOBIGLIETTO_RAGGR").agg(
+        pl.sum("numero")
+    )
+    return table.rename({"NOME_TIPOBIGLIETTO_RAGGR": "NOME_TIPOBIGLIETTO"})
+    
 # tabella tipo persone grafico tipo persone
 def chart_tipo(table,raggr):
-    tab=conta_tipo(table,raggr)
-    pies_chart(tab,raggr)
+    table=conta_tipo(table,raggr)
+    if raggr == "NOME_TIPOBIGLIETTO":
+        table=raggr_7GG(table)
+    return pies_chart(table,raggr)
 
 # grafico per podio passaggi
 def podio(tab):

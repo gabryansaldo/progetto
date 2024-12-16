@@ -29,12 +29,11 @@ def chart_top5(table, group_col, value_col,):
     return chart
 
 
-def Daily_Statistics():
-    utils.load_dataset()
+def Intro(table):
     st.title("📅 **Analisi dei Passaggi Giornalieri**")
     st.write("Esplora i dati relativi ai passaggi giornalieri degli skipass. Puoi selezionare una data specifica per osservare i dettagli di quel giorno oppure visualizzare un'analisi complessiva di tutti i passaggi registrati.")
     
-    tab=st.session_state.passaggi.select(["DATAPASSAGGIO","CODICEBIGLIETTO","NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"])
+    tab=table.select(["DATAPASSAGGIO","CODICEBIGLIETTO","NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"])
 
     pers=utils.units_per_day(tab)
     max_row_pers = pers.sort("persone", descending=True).head(1)
@@ -58,21 +57,47 @@ def Daily_Statistics():
     col3.write("Registrato il:")
     col4.write(f"*{max_data_pas}*")
     
-    st.divider()
-    st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico")
-    table=utils.filter_day(st.session_state.passaggi)
+
+def Statistic(table):
+    st.header("Statistiche")
+
+    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
+    col1.write("**Numero di persone:**")
+    col2.write(f"*{len(utils.lista_modalita(table,"CODICEBIGLIETTO"))}*")
+
+    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
+    col1.write("**Numero di passaggi:**")
+    col2.write(f"*{len(table)}*")
+    
+    st.write("### Tipo persona")
+    st.altair_chart(utils.chart_tipo(table,"NOME_TIPOPERSONA"),use_container_width=True)
+    st.write("### Tipo biglietto")
+    st.altair_chart(utils.chart_tipo(table,"NOME_TIPOBIGLIETTO"),use_container_width=True)
+
+
+def Top(table):
+    st.header("Classifica")
 
     top10=utils.group_by_skipass(table)[:10]
-    #top10=top10.rename({"NOME_TIPOPERSONA":"Tipo persona", "CODICEBIGLIETTO": "Codice biglietto"})
     st.dataframe(utils.change_columns_title(top10).select(["Data","Codice biglietto","Tipo persona","passaggi"]))
 
     utils.podio(top10[:3])
-
-    # utils.chart_tipo(table,"NOME_TIPOPERSONA")
-    # utils.chart_tipo(table,"NOME_TIPOBIGLIETTO")
 
     col1,col2=st.columns(2)
     col1.markdown(f"### Top 5 Valli con più passaggi")
     col1.altair_chart(chart_top5(utils.change_columns_title(table),"Valle","Data passaggio"),use_container_width=True)
     col2.markdown(f"### Top 5 Impianti con più passaggi")
     col2.altair_chart(chart_top5(utils.change_columns_title(table),"Impianto","Data passaggio"),use_container_width=True)
+
+
+def Daily_Statistics():
+    utils.load_dataset()
+    Intro(st.session_state.passaggi)
+    st.divider()
+    st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico")
+    table=utils.filter_day(st.session_state.passaggi)
+    st.divider()
+    Statistic(table)
+    st.divider()
+    Top(table)
+
