@@ -6,24 +6,24 @@ import pandas as pd
 
 
 
-def chart_top5(table, group_col, alias, value_col="DATAPASSAGGIO",):
+def chart_top5(table, group_col, value_col,):
     grouped = (
-        table.rename({group_col:alias})
-        .group_by(alias)
+        table
+        .group_by(group_col)
         .agg(pl.col(value_col).n_unique().alias("Totale"))
         .sort("Totale", descending=True)
     )
     
-    top_10 = grouped[:5]
+    top_5 = grouped[:5]
     
     chart = (
-        alt.Chart(top_10)
+        alt.Chart(top_5)
         .mark_bar()
         .encode(
             alt.X("Totale", title="Passaggi Totali"),
-            alt.Y(alias, sort="-x", title=""),
-            alt.Color(alias, legend=None).scale(scheme="paired"), #viridis
-            [alt.Tooltip(alias), alt.Tooltip("Totale", title="Passaggi")]
+            alt.Y(group_col, sort="-x", title=""),
+            alt.Color(group_col, legend=None).scale(scheme="paired"), #viridis
+            [alt.Tooltip(group_col), alt.Tooltip("Totale", title="Passaggi")]
         )
     )
     return chart
@@ -63,7 +63,8 @@ def Daily_Statistics():
     table=utils.filter_day(st.session_state.passaggi)
 
     top10=utils.group_by_skipass(table)[:10]
-    st.dataframe(top10.select(["Data","CODICEBIGLIETTO","NOME_TIPOPERSONA","passaggi"]))
+    #top10=top10.rename({"NOME_TIPOPERSONA":"Tipo persona", "CODICEBIGLIETTO": "Codice biglietto"})
+    st.dataframe(utils.change_columns_title(top10).select(["Data","Codice biglietto","Tipo persona","passaggi"]))
 
     utils.podio(top10[:3])
 
@@ -72,6 +73,6 @@ def Daily_Statistics():
 
     col1,col2=st.columns(2)
     col1.markdown(f"### Top 5 Valli con più passaggi")
-    col1.altair_chart(chart_top5(table,"NOME_VALLEPOSIZIONEIMPIANTO", alias="Valli"),use_container_width=True)
+    col1.altair_chart(chart_top5(utils.change_columns_title(table),"Valle","Data passaggio"),use_container_width=True)
     col2.markdown(f"### Top 5 Impianti con più passaggi")
-    col2.altair_chart(chart_top5(table,"NOME_IMPIANTO", alias="Impianti"),use_container_width=True)
+    col2.altair_chart(chart_top5(utils.change_columns_title(table),"Impianto","Data passaggio"),use_container_width=True)

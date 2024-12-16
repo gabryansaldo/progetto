@@ -3,6 +3,13 @@ import streamlit as st
 import altair as alt
 import utils
 
+#dizionario opzioni scelta
+def get_opzioni_map():
+    return {
+        "Valle": "NOME_VALLEPOSIZIONEIMPIANTO",
+        "Impianto": "NOME_IMPIANTO",
+    }
+
 # scelgo se vedere totale o solo delle cose selezionate
 def selezione_pass(table):
     st.title("🕓 Analisi dei Passaggi Orari")
@@ -21,7 +28,7 @@ def selezione_pass(table):
         hourly_pass_T(table.select(["DATAPASSAGGIO"]))
     st.divider()
 
-    opzioni_map = utils.get_opzioni_map()
+    opzioni_map = get_opzioni_map()
     lista_colonne_utili = ["DATAPASSAGGIO"]
 
     for key in opzioni_map:
@@ -47,7 +54,7 @@ def hourly_pass_T(table):
             .mark_line()
             .encode(
                 alt.X("ora").scale(zero=False),
-                alt.Y("PASSAGGI"),
+                alt.Y("Passaggi"),
             )
         )
         col2.altair_chart(chart, use_container_width=True)
@@ -92,7 +99,7 @@ def hourly_pass_vi(table,opzioni_map):
         raggr
         .sort(c)
         .pivot(
-            values="PASSAGGI",
+            values="Passaggi",
             index="ora",
             on=c
         )
@@ -109,8 +116,8 @@ def hourly_pass_vi(table,opzioni_map):
                 .mark_line()
                 .encode(
                     alt.X("ora").scale(zero=False),
-                    alt.Y("PASSAGGI"),
-                    alt.Color(c).scale(scheme="paired")
+                    alt.Y("Passaggi"),
+                    alt.Color(c,title="Valle").scale(scheme="paired")
                 )
             )
             st.altair_chart(chart, use_container_width=True)

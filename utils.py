@@ -4,6 +4,8 @@ import time
 import base64
 import pandas as pd
 import altair as alt
+from pathlib import Path
+
 
 #se il dataset non è ancora caricato richiama read_dataset
 def load_dataset():
@@ -84,13 +86,6 @@ def sidebar(table):
 
     #commento()
 
-#dizionario opzioni scelta
-def get_opzioni_map():
-    return {
-        "Valle": "NOME_VALLEPOSIZIONEIMPIANTO",
-        "Impianto": "NOME_IMPIANTO",
-    }
-
 #raggruppa per skipass
 def group_by_skipass(table):
     return (
@@ -120,7 +115,7 @@ def group_by_hour(table, groupby):
     return (
         table
         .with_columns(pl.col("DATAPASSAGGIO").dt.hour().alias("ora"))
-        .group_by(groupby).agg(pl.len().alias("PASSAGGI"))
+        .group_by(groupby).agg(pl.len().alias("Passaggi"))
     )
 
 #conta numero modalità diverse di una variabile
@@ -145,7 +140,8 @@ def commento():
         user_stars = st.feedback("stars")
         if st.button(f"Salva"):
             if user_input.strip():
-                with open("others\commenti.txt", "a") as file:
+                file_path = Path("others") / "commenti.txt"
+                with open(file_path, "a") as file:
                     file.write("Commento: " + user_input + "\n" + str(user_stars+1) + "\n\n")
                 st.success("Il tuo commento è stato salvato con successo!")
             else:
@@ -165,12 +161,10 @@ def get_base64(file_path):
 
 #tabella solo nome impianto e valle
 def minimal_table(table):
-    return table.with_columns(pl.col("NOME_IMPIANTO").alias("Nome Impianto")
-    ).with_columns(pl.col("NOME_VALLEPOSIZIONEIMPIANTO").alias("Valle")
-    ).with_columns(pl.col("DATAPASSAGGIO").alias("Data e Ora")
-    ).sort("Data e Ora"
+    tab = table.sort("DATAPASSAGGIO"
     ).with_columns(pl.Series("index", range(1,len(table)+1))
-    ).select(["index","Nome Impianto","Valle","Data e Ora"])
+    ).select(["index","NOME_IMPIANTO","NOME_VALLEPOSIZIONEIMPIANTO","DATAPASSAGGIO"])
+    return change_columns_title(tab)
 
 #divido colonna 
 def tab_day_hour(table):
@@ -317,3 +311,33 @@ def podio(tab):
     st.altair_chart(
         podium_chart + pass_chart + emoji_chart + skipass_chart,
         use_container_width=True)
+
+# dizionario con alias delle colonne
+def create_col_map():
+    return {
+        "CODICEBIGLIETTO": "Codice biglietto",
+        "ID_CASSA": "ID cassa",
+        "NOME_CASSA": "Cassa",
+        "ID_VALLEPOSIZIONECASSA": "ID valle cassa",
+        "NOME_VALLEPOSIZIONECASSA": "Valle cassa",
+        "DATAPASSAGGIO": "Data passaggio",
+        "ID_IMPIANTO": "ID impianto",
+        "NOME_IMPIANTO": "Impianto",
+        "ID_VALLEPOSIZIONEIMPIANTO": "ID valle impianto",
+        "NOME_VALLEPOSIZIONEIMPIANTO": "Valle",
+        "ID_VALLEVALIDITABIGLIETTO": "ID valle validità biglietto",
+        "NOME_VALLEVALIDITABIGLIETTO": "Valle validità biglietto",
+        "ID_TIPOBIGLIETTO": "ID tipo biglietto",
+        "NOME_TIPOBIGLIETTO": "Tipo biglietto",
+        "ID_TIPOPERSONA": "ID tipo persona",
+        "NOME_TIPOPERSONA": "Tipo persona"
+    }
+
+# cambia il nome delle colonne della tabella passata in quello definito nella funzione create_col_map
+def change_columns_title(table):
+    map=create_col_map()
+    columns = {}
+    for k, v in map.items():
+        if k in table.columns:
+            columns[k] = v
+    return table.rename(columns)

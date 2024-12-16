@@ -1,8 +1,10 @@
 import streamlit as st
 import utils
+from pathlib import Path
 
 def Welcome():
-    utils.background("others/background2.webp")
+    file_path = Path("others") / "background_welcome.webp"
+    utils.background(file_path)
     
     st.markdown(
     """
@@ -131,7 +133,3 @@ def Welcome():
             </p>
         </div>
         """,unsafe_allow_html=True)
-
-        
-
-    

@@ -48,9 +48,3 @@ if __name__ == "__main__":
 # - mappa impianti con geopandas
 
 # - usare column configuration in st.dataframe (linechartcolumn, format)
-
-# - abbellire sidebar, aggiungere tot persone
-
-# - togliere container daily analysis e lasciare tot pers. giorno/totale selezionato all'inizio aggiungere giorno record contenuto nel dataset
-
-# - podio con barchart in daily
