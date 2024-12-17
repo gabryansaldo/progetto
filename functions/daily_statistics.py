@@ -2,7 +2,6 @@ import streamlit as st
 import utils
 import altair as alt
 import polars as pl
-import pandas as pd
 
 
 
@@ -79,9 +78,11 @@ def Top(table):
     st.header("Classifica")
 
     top10=utils.group_by_skipass(table)[:10]
-    st.dataframe(utils.change_columns_title(top10).select(["Data","Codice biglietto","Tipo persona","passaggi"]))
-
-    utils.podio(top10[:3])
+    col1,col2=st.columns([0.52,0.48])
+    col1.dataframe(utils.change_columns_title(top10).select(["Data","Codice biglietto","Tipo persona","passaggi"]))
+    col2.write("\n")
+    col2.write("\n")
+    col2.altair_chart(utils.podio(top10[:3]),use_container_width=True)
 
     col1,col2=st.columns(2)
     col1.markdown(f"### Top 5 Valli con più passaggi")

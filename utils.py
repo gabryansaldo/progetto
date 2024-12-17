@@ -145,12 +145,6 @@ def commento():
                 st.success("Il tuo commento è stato salvato con successo!")
             else:
                 st.warning("Il campo è vuoto. Per favore, inserisci del testo.")
-
-#scrivi il testo lentamente
-def stream_data(string):
-    for word in string.split(" "):
-        yield word + " "
-        time.sleep(0.1)
     
 #cambio formato immagine
 def get_base64(file_path):
@@ -281,7 +275,7 @@ def podio(tab):
 
     podium_chart = (
         alt.Chart(podio)
-        .mark_bar(size=235)
+        .mark_bar(size=115)
         .encode(
             alt.X("posizione:O", title="",axis=alt.Axis(labels=False)),
             alt.Y("altezza:Q", title="",axis=alt.Axis(labels=False, grid=False)),
@@ -289,14 +283,14 @@ def podio(tab):
             tooltip=alt.value(None)
         )
         .properties(
-            width=400,
-            height=300 
+            #width=400,
+            height=250 
         )
     )   
     
     pass_chart = (
         alt.Chart(podio)
-        .mark_text(fontSize=24,baseline="top", dy=10)
+        .mark_text(fontSize=24,baseline="bottom", dy=0)
         .encode(
             alt.X("posizione:O"),
             alt.Y("altezza:Q"),
@@ -307,7 +301,7 @@ def podio(tab):
 
     emoji_chart = (
         alt.Chart(podio)
-        .mark_text(fontSize=24,baseline="top", dy=40)
+        .mark_text(fontSize=24,baseline="top", dy=15)
         .encode(
             alt.X("posizione:O"),
             alt.Y("altezza:Q"),
@@ -318,7 +312,7 @@ def podio(tab):
 
     skipass_chart = (
         alt.Chart(podio)
-        .mark_text(fontSize=16,baseline="top", dy=70)
+        .mark_text(fontSize=16,baseline="top", dy=45)
         .encode(
             alt.X("posizione:O"),
             alt.Y("altezza:Q"),
@@ -327,9 +321,7 @@ def podio(tab):
         )
     )
 
-    st.altair_chart(
-        podium_chart + pass_chart + emoji_chart + skipass_chart,
-        use_container_width=True)
+    return podium_chart + pass_chart + emoji_chart + skipass_chart
 
 # dizionario con alias delle colonne
 def create_col_map():
