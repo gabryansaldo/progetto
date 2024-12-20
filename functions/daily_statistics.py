@@ -69,8 +69,11 @@ def Statistic(table):
     col2.write(f"*{len(table)}*")
     
     st.write("### Tipo persona")
+    st.write("totale calcolato con somma dell per sone in ogni giorno e non persone diverse")
     st.altair_chart(utils.chart_tipo(table,"NOME_TIPOPERSONA"),use_container_width=True)
+
     st.write("### Tipo biglietto")
+    st.write("i biglietti da 7 a 20 giorni sono stati raggruppati in una modalità unica")
     st.altair_chart(utils.chart_tipo(table,"NOME_TIPOBIGLIETTO"),use_container_width=True)
 
 

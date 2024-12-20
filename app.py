@@ -48,3 +48,9 @@ if __name__ == "__main__":
 # - mappa impianti con geopandas
 
 # - usare column configuration in st.dataframe (linechartcolumn, format)
+
+# - scrivere di più e meglio
+
+# - commentare funzioni
+
+# - più grafici

@@ -69,7 +69,7 @@ def hourly_pass_vi(table,opzioni_map):
     c_aka = st.segmented_control("Seleziona:",
         options=list(opzioni_map.keys()),
         default=list(opzioni_map.keys())[0],
-        help=f"Scegli raggruppamento da eseguire tra i seguenti"
+        help=f"Si scelga raggruppamento da eseguire tra i seguenti"
     )
     if c_aka == None:
         c_aka=list(opzioni_map.keys())[0]
@@ -79,9 +79,9 @@ def hourly_pass_vi(table,opzioni_map):
     
     form1 = st.form(key="vi_filter")
     mod_selezionate = form1.multiselect(
-        f"Inserisci {c_aka.lower()} di interesse",
+        f"Si inserisca {c_aka.lower()} di interesse e successivamente confermare",
         lista_mod,
-        help=f"Seleziona una o più opzioni per restringere l'analisi. Può lasciare vuota la selezione per includere tutti i valori."
+        help=f"Si selezioni una o più opzioni per restringere l'analisi, si lasci vuota la selezione per includere tutti i valori."
     )
     form1.form_submit_button("Submit")
 
@@ -109,7 +109,18 @@ def hourly_pass_vi(table,opzioni_map):
 
 
     if not result.is_empty():
-        st.write(result)
+        dett_exp=st.expander(f"Visualizza numero di passaggi dettagliati")
+        with dett_exp:
+            dett_exp.dataframe(result,use_container_width=True)
+
+        st.divider()
+
+        if len(mod_selezionate)!=0 or c_aka!=list(opzioni_map.keys())[1]:
+            st.header("Grafici")
+
+        if c_aka==list(opzioni_map.keys())[0] and list(opzioni_map)[0]=="Valle":
+            heatmap(raggr)
+
         if len(mod_selezionate)!=0 or c_aka!=list(opzioni_map.keys())[1]:
             chart = (
                 alt.Chart(raggr)
@@ -117,10 +128,64 @@ def hourly_pass_vi(table,opzioni_map):
                 .encode(
                     alt.X("ora").scale(zero=False),
                     alt.Y("Passaggi"),
-                    alt.Color(c,title="Valle").scale(scheme="paired")
+                    alt.Color(c,title=c_aka).scale(scheme="paired")
                 )
             )
-            st.altair_chart(chart, use_container_width=True)
+            contL=st.container(border=True)
+            contL.write("#### Grafico a linee")
+            contL.write(f"Questo **grafico a linee** mostra l'andamento dei passaggi durante la giornata per ciascuna {c_aka}. L'asse orizzontale rappresenta l'ora, mentre l'asse verticale mostra il numero di passaggi. Le linee colorate indicano le diverse valli, consentendo di confrontare l'affluenza nel corso della giornata.")
+            contL.altair_chart(chart, use_container_width=True)
+
+
+def heatmap(raggr):
+    result = (
+        raggr
+        .pivot(
+            values="Passaggi",
+            index="ora",
+            columns="NOME_VALLEPOSIZIONEIMPIANTO"
+        )
+        .fill_null(0)
+        .sort("ora")
+    )
+
+    raggr_ore = (
+        result.unpivot(
+            index=["ora"],
+            variable_name="NOME_VALLEPOSIZIONEIMPIANTO",
+            value_name="Passaggi"
+        )
+    )
+
+    raggr_ore = raggr_ore.with_columns(
+        pl.col("Passaggi").sum().over("NOME_VALLEPOSIZIONEIMPIANTO").alias("TotalePassaggi")
+    )
+
+    raggr_ore = raggr_ore.with_columns(
+        ((pl.col("Passaggi") / pl.col("TotalePassaggi")) * 100).alias("Percentuale")
+    )
+
+    chart = (
+        alt.Chart(raggr_ore)
+        .mark_rect()
+        .encode(
+            alt.X("ora:O"),#.scale(zero=False),
+            alt.Y("NOME_VALLEPOSIZIONEIMPIANTO:O", title="Valle"),
+            alt.Color("Percentuale",title="Passaggi %").scale(scheme="inferno"),
+            tooltip=[
+                alt.Tooltip("Passaggi:Q", title="Passaggi"),
+                alt.Tooltip("ora:O", title="Ora"),
+                alt.Tooltip("NOME_VALLEPOSIZIONEIMPIANTO:O", title="Valle")
+            ],
+        )
+    )
+    contH=st.container(border=True)
+    contH.write("#### Heatmap")
+    contH.write(f"Questa **heatmap** mostra le ore più affollate per ciascuna valle, calcolate in percentuale rispetto al totale dei passaggi giornalieri (o totali se selezionato all'inizio di questa pagina). Le intensità dei colori rappresentano la densità di passaggi, con toni più chiari indicanti periodi più affollati.")
+    contH.write("")
+    contH.altair_chart(chart, use_container_width=True)
+    contH.write("Dalle osservazioni della heatmap, emerge che in tutte le valli le ore più affollate si concentrano tra le 9:00 e le 11:00. Questo periodo rappresenta le fasce orarie in cui si registra il picco di passaggi, indicando un maggiore afflusso di visitatori durante le prime ore della giornata")
+    st.write("")
 
 #funzione pagina
 def Hourly_Analysis():
