@@ -15,7 +15,7 @@ def selezione_pass(table):
     st.title("🕓 Analisi dei Passaggi Orari")
     st.markdown("""
         Questa dashboard permette di analizzare i passaggi per ora, totali o filtrati per valli e impianti.  
-        È possibile decidere se visulizzare un giorno o il totale
+        È possibile decidere se visulizzare un giorno o il totale, la scelta avrà effetto su tutta la pagina.
     """)
 
     table=utils.filter_day(table)
@@ -23,9 +23,10 @@ def selezione_pass(table):
     st.markdown("""
         Scegli tra le opzioni disponibili per esplorare i dati.
     """)
-    show_totals = st.checkbox(f"Mostra totali per ora")
-    if show_totals:
+    dett_exp=st.expander(f"Mostra totali per ora")
+    with dett_exp:
         hourly_pass_T(table.select(["DATAPASSAGGIO"]))
+        
     st.divider()
 
     opzioni_map = get_opzioni_map()
@@ -46,7 +47,7 @@ def selezione_pass(table):
 def hourly_pass_T(table):
     result = utils.group_by_hour(table,"ora").sort("ora")
     if not result.is_empty():
-        col1,col2=st.columns([0.2,0.8])
+        col1,col2=st.columns([0.25,0.75])
         col1.write(result)
 
         chart = (
