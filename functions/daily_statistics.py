@@ -96,6 +96,7 @@ def Top(table):
 
 def Daily_Statistics():
     utils.load_dataset()
+    st.header("PAGINA CON I TESTI ANCORA DA DEFINIRE")
     Intro(st.session_state.passaggi)
     st.divider()
     st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico")
