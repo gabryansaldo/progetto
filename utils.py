@@ -95,6 +95,17 @@ def group_by_skipass(table):
         .sort(["passaggi"], descending=[True])   
     )
 
+
+def group_skipass_wo_date(table):
+    tab=group_by_skipass(table)
+    return (
+        tab
+        .group_by(["CODICEBIGLIETTO", "NOME_TIPOPERSONA", "NOME_TIPOBIGLIETTO"])
+        .agg([
+            pl.sum("passaggi").alias("total_passaggi"),
+        ])
+    )
+
 #persone per ciascun giorno
 def units_per_day(table):
     groupskipass=group_by_skipass(table)
@@ -121,10 +132,19 @@ def group_by_hour(table, groupby):
 def conta_mod(table,var):
     return len(lista_modalita(table,var))
 
-#conta skipass per modalità (es. tipo skipass) di una variabile data
-def conta_tipo(table,var):
-    tab_pers=group_by_skipass(table)
-    return tab_pers.group_by(var).agg(pl.count(var).alias("numero")).sort("numero")
+#conta skipass per modalità (es. tipo skipass) di una variabile (o lista di variabili) passata
+def conta_tipo(table, var):
+    tab_pers = group_skipass_wo_date(table)
+    
+    if isinstance(var, str):
+        var = [var]
+    
+    return (
+        tab_pers
+        .group_by(var)
+        .agg(pl.count(var[0]).alias("numero"))
+        .sort("numero")
+    )
 
 #tabella più facile da vedere
 def fancy_table(table):
@@ -197,6 +217,7 @@ def filter_day(table):
 # grafico tipo persone
 def pies_chart(tab,raggr):
     alias=create_col_map()[raggr]
+
     base_pie = (
         alt.Chart(tab)
         .mark_arc(
@@ -206,31 +227,92 @@ def pies_chart(tab,raggr):
         )
         .encode(
             alt.Theta("numero:Q"),
-            alt.Color(raggr+":N",title=f"{alias}").scale(scheme="rainbow")
+            alt.Color(raggr+":N",title=f"{alias}").scale(scheme="rainbow"),
+            tooltip=[alt.Tooltip(raggr,title=f"{alias}"),alt.Tooltip("numero",title="numero", format=",.0f"),]
         )
     )
 
     text_pie = (
         alt.Chart(tab)
-        .mark_text(radius=140, size=15)
+        .mark_text(radius=145, size=15)
         .encode(
-            alt.Text("numero:Q"),
+            alt.Text("numero:Q", format=",.0f"),
             alt.Theta("numero:Q").stack(True),
             alt.Order(raggr+":N"),
             alt.Color(raggr+":N")
         )
+        .add_params(selection)
     )
     
     total_text = (
         alt.Chart(tab)
         .mark_text(radius=0, size=30)
         .encode(
-            alt.Text("sum(numero):Q"),
+            alt.Text("sum(numero):Q", format=",.0f"),
             color=alt.value("red")
         )
     )
 
-    return base_pie + text_pie + total_text
+    return base_pie + text_pie + total_text #| bar_chart
+
+# grafico interattivo persone e biglietti
+def pies_chart_interactive(tab):
+    alias=create_col_map()["NOME_TIPOBIGLIETTO"]
+
+    selection = alt.selection_point(fields=["NOME_TIPOBIGLIETTO"], bind="scales")
+    table=tab.group_by("NOME_TIPOBIGLIETTO").agg(pl.sum("numero"))
+
+    base_pie = (
+        alt.Chart(table)
+        .mark_arc(
+            cornerRadius=8,
+            radius=120,
+            radius2=80
+        )
+        .encode(
+            alt.Theta("numero:Q"),
+            alt.Color("NOME_TIPOBIGLIETTO"+":N",title=f"{alias}").scale(scheme="rainbow"),
+            tooltip=[alt.Tooltip("NOME_TIPOBIGLIETTO",title=f"{alias}"),alt.Tooltip("numero",title="Persone", format=",.0f"),]
+        )
+    )
+
+    text_pie = (
+        alt.Chart(table)
+        .mark_text(radius=145, size=15)
+        .encode(
+            alt.Text("numero:Q", format=",.0f"),
+            alt.Theta("numero:Q").stack(True),
+            alt.Order("NOME_TIPOBIGLIETTO"+":N"),
+            alt.Color("NOME_TIPOBIGLIETTO"+":N")
+        )
+        .add_params(selection)
+    )
+    
+    total_text = (
+        alt.Chart(table)
+        .mark_text(radius=0, size=30)
+        .encode(
+            alt.Text("sum(numero):Q", format=",.0f"),
+            color=alt.value("red")
+        )
+    )
+    
+
+    bar_chart = (
+        alt.Chart(tab)
+        .mark_bar()
+        .encode(
+            alt.X("NOME_TIPOPERSONA" + ":N", title=None),
+            alt.Y("numero", title=None),
+            tooltip=alt.value(None)
+        )
+        .transform_filter(selection)
+        .properties(
+            width=120,
+            height=300 )
+    )
+
+    return base_pie + text_pie + total_text | bar_chart
 
 # raggruppa giorni da 7 in poi
 def raggr_7GG(table):
@@ -248,16 +330,21 @@ def raggr_7GG(table):
         .alias("NOME_TIPOBIGLIETTO_RAGGR")
     )
 
-    table = table.group_by("NOME_TIPOBIGLIETTO_RAGGR").agg(
-        pl.sum("numero")
+    table = table.group_by(["NOME_TIPOBIGLIETTO_RAGGR", "NOME_TIPOPERSONA"]).agg(
+        pl.sum("numero")#.alias("totale_numero")
     )
+
     return table.rename({"NOME_TIPOBIGLIETTO_RAGGR": "NOME_TIPOBIGLIETTO"})
     
-# tabella tipo persone grafico tipo persone
+# fornisce grafico a torta e a barre interattivo
+def chart_tipo_interatt(table):
+    raggr=["NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"]
+    table=raggr_7GG(conta_tipo(table,raggr))
+    return pies_chart_interactive(table)
+
+# grafico a torta per una variabile
 def chart_tipo(table,raggr):
     table=conta_tipo(table,raggr)
-    if raggr == "NOME_TIPOBIGLIETTO":
-        table=raggr_7GG(table)
     return pies_chart(table,raggr)
 
 # grafico per podio passaggi

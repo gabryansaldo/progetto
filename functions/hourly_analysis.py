@@ -129,7 +129,7 @@ def hourly_pass_vi(table,opzioni_map):
                 .encode(
                     alt.X("ora").scale(zero=False),
                     alt.Y("Passaggi"),
-                    alt.Color(c,title=c_aka).scale(scheme="paired")
+                    alt.Color(c,title=c_aka).scale(scheme="paired"),
                 )
             )
             contL=st.container(border=True)

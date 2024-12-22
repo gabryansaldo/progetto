@@ -22,7 +22,7 @@ def chart_top5(table, group_col, value_col,):
             alt.X("Totale", title="Passaggi Totali"),
             alt.Y(group_col, sort="-x", title=""),
             alt.Color(group_col, legend=None).scale(scheme="paired"), #viridis
-            [alt.Tooltip(group_col), alt.Tooltip("Totale", title="Passaggi")]
+            [alt.Tooltip(group_col), alt.Tooltip("Totale", title="Passaggi", format=",.0f")]
         )
     )
     return chart
@@ -46,13 +46,13 @@ def Intro(table):
 
     spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
     col1.write("**🏆 Record di persone:**")
-    col2.write(f"*{max_pers}*")
+    col2.write(f"*{max_pers:,}*")
     col3.write("Registrato il:")
     col4.write(f"*{max_data_pers}*")
 
     spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
     col1.write("**🏆 Record di passaggi:**")
-    col2.write(f"*{max_pas}*")
+    col2.write(f"*{max_pas:,}*")
     col3.write("Registrato il:")
     col4.write(f"*{max_data_pas}*")
     
@@ -62,19 +62,15 @@ def Statistic(table):
 
     spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
     col1.write("**Numero di persone:**")
-    col2.write(f"*{len(utils.lista_modalita(table,"CODICEBIGLIETTO"))}*")
+    col2.write(f"*{len(utils.lista_modalita(table,"CODICEBIGLIETTO")):,}*")
 
     spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
     col1.write("**Numero di passaggi:**")
-    col2.write(f"*{len(table)}*")
-    
-    st.write("### Tipo persona")
-    st.write("totale calcolato con somma dell per sone in ogni giorno e non persone diverse")
-    st.altair_chart(utils.chart_tipo(table,"NOME_TIPOPERSONA"),use_container_width=True)
+    col2.write(f"*{len(table):,}*")
 
-    st.write("### Tipo biglietto")
-    st.write("i biglietti da 7 a 20 giorni sono stati raggruppati in una modalità unica")
-    st.altair_chart(utils.chart_tipo(table,"NOME_TIPOBIGLIETTO"),use_container_width=True)
+    st.write("### Tipo persona e Tipo Biglietto")
+    st.write("i biglietti da 7 a 20 giorni sono stati raggruppati in una modalità unica, clicca sulle sezioni per filtrare")
+    st.altair_chart(utils.chart_tipo_interatt(table),use_container_width=True)
 
 
 def Top(table):
