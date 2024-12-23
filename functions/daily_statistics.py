@@ -21,7 +21,7 @@ def chart_top5(table, group_col, value_col,):
         .encode(
             alt.X("Totale", title="Passaggi Totali"),
             alt.Y(group_col, sort="-x", title=""),
-            alt.Color(group_col, legend=None).scale(scheme="paired"), #viridis
+            alt.Color(group_col, legend=None).scale(scheme="rainbow"), #viridis
             [alt.Tooltip(group_col), alt.Tooltip("Totale", title="Passaggi", format=",.0f")]
         )
     )
@@ -69,7 +69,7 @@ def Statistic(table):
     col2.write(f"*{len(table):,}*")
 
     st.write("### Tipo persona e Tipo Biglietto")
-    st.write("i biglietti da 7 a 20 giorni sono stati raggruppati in una modalità unica, clicca sulle sezioni per filtrare")
+    st.write("i biglietti da 7 a 20 giorni sono stati raggruppati in una modalità unica, clicca sulle sezioni per filtrare, clicca al centro per tornare a visualizzazione iniziale")
     st.altair_chart(utils.chart_tipo_interatt(table),use_container_width=True)
 
 
@@ -84,15 +84,14 @@ def Top(table):
     col2.altair_chart(utils.podio(top10[:3]),use_container_width=True)
 
     col1,col2=st.columns(2)
-    col1.markdown(f"### Top 5 Valli con più passaggi")
+    col1.markdown(f"### Top 5 Valli per passaggi")
     col1.altair_chart(chart_top5(utils.change_columns_title(table),"Valle","Data passaggio"),use_container_width=True)
-    col2.markdown(f"### Top 5 Impianti con più passaggi")
+    col2.markdown(f"### Top 5 Impianti per passaggi")
     col2.altair_chart(chart_top5(utils.change_columns_title(table),"Impianto","Data passaggio"),use_container_width=True)
 
 
 def Daily_Statistics():
     utils.load_dataset()
-    st.header("PAGINA CON I TESTI ANCORA DA DEFINIRE")
     Intro(st.session_state.passaggi)
     st.divider()
     st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico")

@@ -123,14 +123,21 @@ def hourly_pass_vi(table,opzioni_map):
             heatmap(raggr)
 
         if len(mod_selezionate)!=0 or c_aka!=list(opzioni_map.keys())[1]:
+            highlight = alt.selection_point(fields=[c], bind="legend")
+            #highlight = alt.selection_point(fields=[c], on="click", empty="none", name="Highlight")
+            #selection = alt.selection_point(fields=[c], bind="legend")
             chart = (
                 alt.Chart(raggr)
                 .mark_line()
                 .encode(
                     alt.X("ora").scale(zero=False),
                     alt.Y("Passaggi"),
-                    alt.Color(c,title=c_aka).scale(scheme="paired"),
+                    alt.Color(c,title=c_aka).scale(scheme="rainbow"),
+                    opacity=alt.condition(highlight, alt.value(1), alt.value(0.2)),
                 )
+                #.add_params(selection)
+                .add_params(highlight)
+
             )
             contL=st.container(border=True)
             contL.write("#### Grafico a linee")
@@ -181,7 +188,7 @@ def heatmap(raggr):
         )
     )
     contH=st.container(border=True)
-    contH.write("#### Heatmap")
+    contH.write("#### Orari più affollati")
     contH.write(f"Questa **heatmap** mostra le ore più affollate per ciascuna valle, calcolate in percentuale rispetto al totale dei passaggi giornalieri (o totali se selezionato all'inizio di questa pagina). Le intensità dei colori rappresentano la densità di passaggi, con toni più chiari indicanti periodi più affollati.")
     contH.write("")
     contH.altair_chart(chart, use_container_width=True)

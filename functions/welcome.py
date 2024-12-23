@@ -17,8 +17,6 @@ def Welcome():
         unsafe_allow_html=True,
     )
     tab1, tab2, tab3 = st.tabs(["Benvenuti", "Informazioni","Guida"])
-    st.header("PAGINA CON I TESTI ANCORA DA DEFINIRE")
-
 
     with tab1:
         st.markdown(

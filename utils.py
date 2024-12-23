@@ -95,7 +95,7 @@ def group_by_skipass(table):
         .sort(["passaggi"], descending=[True])   
     )
 
-
+# raggruppa per skipass e non la data
 def group_skipass_wo_date(table):
     tab=group_by_skipass(table)
     return (
@@ -241,7 +241,6 @@ def pies_chart(tab,raggr):
             alt.Order(raggr+":N"),
             alt.Color(raggr+":N")
         )
-        .add_params(selection)
     )
     
     total_text = (
@@ -253,7 +252,7 @@ def pies_chart(tab,raggr):
         )
     )
 
-    return base_pie + text_pie + total_text #| bar_chart
+    return base_pie + text_pie + total_text
 
 # grafico interattivo persone e biglietti
 def pies_chart_interactive(tab):
@@ -272,8 +271,11 @@ def pies_chart_interactive(tab):
         .encode(
             alt.Theta("numero:Q"),
             alt.Color("NOME_TIPOBIGLIETTO"+":N",title=f"{alias}").scale(scheme="rainbow"),
-            tooltip=[alt.Tooltip("NOME_TIPOBIGLIETTO",title=f"{alias}"),alt.Tooltip("numero",title="Persone", format=",.0f"),]
+            tooltip=[alt.Tooltip("NOME_TIPOBIGLIETTO",title=f"{alias}"),alt.Tooltip("numero",title="Persone", format=",.0f"),],
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.4)),
+
         )
+        .add_params(selection)
     )
 
     text_pie = (
@@ -283,9 +285,9 @@ def pies_chart_interactive(tab):
             alt.Text("numero:Q", format=",.0f"),
             alt.Theta("numero:Q").stack(True),
             alt.Order("NOME_TIPOBIGLIETTO"+":N"),
-            alt.Color("NOME_TIPOBIGLIETTO"+":N")
+            alt.Color("NOME_TIPOBIGLIETTO"+":N"),
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.4)),
         )
-        .add_params(selection)
     )
     
     total_text = (
@@ -293,7 +295,7 @@ def pies_chart_interactive(tab):
         .mark_text(radius=0, size=30)
         .encode(
             alt.Text("sum(numero):Q", format=",.0f"),
-            color=alt.value("red")
+            color=alt.value("gray")
         )
     )
     
@@ -304,7 +306,8 @@ def pies_chart_interactive(tab):
         .encode(
             alt.X("NOME_TIPOPERSONA" + ":N", title=None),
             alt.Y("numero", title=None),
-            tooltip=alt.value(None)
+            alt.Color("NOME_TIPOBIGLIETTO"+":N"),
+            tooltip=alt.value(None),
         )
         .transform_filter(selection)
         .properties(
