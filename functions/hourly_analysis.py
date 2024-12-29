@@ -140,7 +140,7 @@ def hourly_pass_vi(table,opzioni_map):
 
             )
             contL=st.container(border=True)
-            contL.write("#### Grafico a linee")
+            contL.write("#### Andamento dei Passaggi Giornalieri per Valle")
             contL.write(f"Questo **grafico a linee** mostra l'andamento dei passaggi durante la giornata per ciascuna {c_aka}. L'asse orizzontale rappresenta l'ora, mentre l'asse verticale mostra il numero di passaggi. Le linee colorate indicano le diverse valli, consentendo di confrontare l'affluenza nel corso della giornata.")
             contL.altair_chart(chart, use_container_width=True)
 

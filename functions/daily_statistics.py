@@ -60,21 +60,41 @@ def Intro(table):
 def Statistic(table):
     st.header("Statistiche")
 
-    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
-    col1.write("**Numero di persone:**")
-    col2.write(f"*{len(utils.lista_modalita(table,"CODICEBIGLIETTO")):,}*")
+    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.15,0.45,0.1])
+    col1.write("**- Numero di persone:**")
+    persone=len(utils.lista_modalita(table,"CODICEBIGLIETTO"))
+    col2.write(f"*{persone:,}*")
 
-    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.2,0.25,0.4])
-    col1.write("**Numero di passaggi:**")
-    col2.write(f"*{len(table):,}*")
+    col3.write("**- Numero di impianti aperti:**")
+    col4.write(f"*{len(utils.lista_modalita(table,"NOME_IMPIANTO")):,}*")
 
-    st.write("### Tipo persona e Tipo Biglietto")
-    st.write("i biglietti da 7 a 20 giorni sono stati raggruppati in una modalità unica, clicca sulle sezioni per filtrare, clicca al centro per tornare a visualizzazione iniziale")
+
+    spaz,col1,col2,col3,col4=st.columns([0.03,0.35,0.15,0.45,0.1])
+    col1.write("**- Numero di passaggi:**")
+    passaggi=len(table)
+    col2.write(f"*{passaggi:,}*")
+
+    col3.write("**- Passaggi medi per persona:**")
+    col4.write(f"*{round(passaggi/persone,2):,}*")
+
+    st.write("\n")
+    st.write("#### 🔍 Interazione tra Tipologia di Biglietto e Tipo di Persona")
+    spaz,col=st.columns([0.03,0.97])
+    col.write(f"""Questo grafico interattivo è composto da due sezioni:
+              \n- 🍰**Grafico a Torta** (a sinistra): Mostra la distribuzione delle tipologie di biglietto, con le modalità da 7 giorni in su (7 Giorni, 8 Giorni...) raggruppate nella categoria "7+ Giorni".
+              \n- 📊**Grafico a Barre** (a destra): Visualizza la distribuzione delle tipologie di persona in base alla selezione effettuata nel grafico a torta.
+              \n**Interagendo**🖱️ con il grafico:
+              \n- Cliccando una sezione del grafico a torta, il grafico a barre si aggiorna per mostrare solo i dati relativi alla tipologia di biglietto scelta.
+              \n- Cliccando al centro del grafico a torta, si torna alla visualizzazione generica senza alcun filtraggio, permettendo di osservare la distribuzione complessiva.
+              """)
     st.altair_chart(utils.chart_tipo_interatt(table),use_container_width=True)
+    spaz,col=st.columns([0.03,0.97])
+    col.write("Si osserva che la proporzione delle tipologie di persone che acquistano un determinato tipo di biglietto rimane generalmente costante. Tuttavia, i Kid e i Senior mostrano una preferenza maggiore per il biglietto stagionale rispetto ad altre categorie, che invece non presentano variazioni significative in base al tipo di biglietto scelto.")
 
 
 def Top(table):
     st.header("Classifica")
+    st.write("Questi sono i 10 skipass che hanno registrato il maggior numero di passaggi nel periodo selezionato ad inizio pagina.")
 
     top10=utils.group_by_skipass(table)[:10]
     col1,col2=st.columns([0.52,0.48])
@@ -83,6 +103,10 @@ def Top(table):
     col2.write("\n")
     col2.altair_chart(utils.podio(top10[:3]),use_container_width=True)
 
+    st.divider()
+
+    st.header("Grafici a Barre: Passaggi per Valli e Impianti")
+    st.write("Nel grafico a barre a sinistra, vengono mostrati i 5 valli con il maggior numero di passaggi per il periodo selezionato. A destra, il grafico a barre illustra gli impianti con i 5 valori più alti di passaggi, offrendo una panoramica chiara delle località con la maggiore affluenza.")
     col1,col2=st.columns(2)
     col1.markdown(f"### Top 5 Valli per passaggi")
     col1.altair_chart(chart_top5(utils.change_columns_title(table),"Valle","Data passaggio"),use_container_width=True)
@@ -94,7 +118,7 @@ def Daily_Statistics():
     utils.load_dataset()
     Intro(st.session_state.passaggi)
     st.divider()
-    st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico")
+    st.write("Selezionare se visualizzare le analisi su tutti i giorni o su un giorno specifico, la scelta avrà effetto su tutta la pagina")
     table=utils.filter_day(st.session_state.passaggi)
     st.divider()
     Statistic(table)

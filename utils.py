@@ -273,7 +273,6 @@ def pies_chart_interactive(tab):
             alt.Color("NOME_TIPOBIGLIETTO"+":N",title=f"{alias}").scale(scheme="rainbow"),
             tooltip=[alt.Tooltip("NOME_TIPOBIGLIETTO",title=f"{alias}"),alt.Tooltip("numero",title="Persone", format=",.0f"),],
             opacity=alt.condition(selection, alt.value(1), alt.value(0.4)),
-
         )
         .add_params(selection)
     )
@@ -387,7 +386,9 @@ def podio(tab):
             alt.X("posizione:O"),
             alt.Y("altezza:Q"),
             alt.Text("4:N"),
+            color=alt.value("gray"),
             tooltip=alt.value(None)
+
         )
     )
 

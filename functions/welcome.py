@@ -22,19 +22,27 @@ def Welcome():
         st.markdown(
         """
             <style>
+            .pretitle {
+                font-size: 30px;
+                text-align: center;
+                margin-top: 60px;
+                color: black;
+                animation: fadeIn 1s ease-in-out;
+            }
+
             .title {
-                font-size: 48px;
+                font-size: 60px;
                 font-weight: bold;
                 text-align: center;
-                margin-top: 50px;
+                margin-top: 0px;
                 color: black;
                 animation: fadeIn 2s ease-in-out;
             }
 
             .subtitle {
-                font-size: 24px;
+                font-size: 22px;
                 text-align: center;
-                margin-top: 10px;
+                margin-top: 5px;
                 color: black;
                 animation: fadeIn 3s ease-in-out;
             }
@@ -47,7 +55,8 @@ def Welcome():
         """,unsafe_allow_html=True,)
         st.markdown(
             """
-            <div class="title">Benvenuto nell'applicazione di Analisi dei Passaggi</div>
+            <div class="pretitle">Benvenuto nell'Applicazione di</div>
+            <div class="title">Analisi SkiPass</div>
             <div class="subtitle">Esplora dati, analizza passaggi e ottieni insights.</div>
             """,
             unsafe_allow_html=True
