@@ -4,7 +4,7 @@ import altair as alt
 import polars as pl
 
 
-
+# grafico a barre per migliori 5 per passaggi
 def chart_top5(table, group_col, value_col,):
     grouped = (
         table
@@ -27,10 +27,10 @@ def chart_top5(table, group_col, value_col,):
     )
     return chart
 
-
+# prima parte della pagina (introduzione)
 def Intro(table):
     st.title("📅 **Analisi dei Passaggi Giornalieri**")
-    st.write("Esplora i dati relativi ai passaggi giornalieri degli skipass. Puoi selezionare una data specifica per osservare i dettagli di quel giorno oppure visualizzare un'analisi complessiva di tutti i passaggi registrati.")
+    st.write("Esplora i dati relativi ai passaggi giornalieri degli skipass. Si può selezionare una data specifica per osservare i dettagli di quel giorno oppure visualizzare un'analisi complessiva di tutti i passaggi registrati.")
     
     tab=table.select(["DATAPASSAGGIO","CODICEBIGLIETTO","NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"])
 
@@ -56,7 +56,7 @@ def Intro(table):
     col3.write("Registrato il:")
     col4.write(f"*{max_data_pas}*")
     
-
+# paragrafo statische del giorno/totale selzionato
 def Statistic(table):
     st.header("Statistiche")
 
@@ -91,10 +91,10 @@ def Statistic(table):
     spaz,col=st.columns([0.03,0.97])
     col.write("Si osserva che la proporzione delle tipologie di persone che acquistano un determinato tipo di biglietto rimane generalmente costante. Tuttavia, i Kid e i Senior mostrano una preferenza maggiore per il biglietto stagionale rispetto ad altre categorie, che invece non presentano variazioni significative in base al tipo di biglietto scelto.")
 
-
+# clasifica persone con più passaggi con dataframe e podio
 def Top(table):
-    st.header("Classifica")
-    st.write("Questi sono i 10 skipass che hanno registrato il maggior numero di passaggi nel periodo selezionato ad inizio pagina.")
+    st.header("Skipass con più passaggi")
+    st.write("Classifica dei 10 skipass che hanno registrato il maggior numero di passaggi in un giorno nel periodo selezionato.")
 
     top10=utils.group_by_skipass(table)[:10]
     col1,col2=st.columns([0.52,0.48])
@@ -105,15 +105,13 @@ def Top(table):
 
     st.divider()
 
-    st.header("Grafici a Barre: Passaggi per Valli e Impianti")
-    st.write("Nel grafico a barre a sinistra, vengono mostrati i 5 valli con il maggior numero di passaggi per il periodo selezionato. A destra, il grafico a barre illustra gli impianti con i 5 valori più alti di passaggi, offrendo una panoramica chiara delle località con la maggiore affluenza.")
+    st.header("Valli e Impianti con più passaggi")
+    st.write("Nel grafico a barre a sinistra, vengono mostrate le 5 valli con il maggior numero di passaggi per il periodo selezionato. A destra, il grafico a barre illustra gli impianti con i 5 valori più alti di passaggi, offrendo una panoramica chiara delle località con la maggiore affluenza.")
     col1,col2=st.columns(2)
-    col1.markdown(f"### Top 5 Valli per passaggi")
     col1.altair_chart(chart_top5(utils.change_columns_title(table),"Valle","Data passaggio"),use_container_width=True)
-    col2.markdown(f"### Top 5 Impianti per passaggi")
     col2.altair_chart(chart_top5(utils.change_columns_title(table),"Impianto","Data passaggio"),use_container_width=True)
 
-
+# main della pagina, richiamo altre funzioni
 def Daily_Statistics():
     utils.load_dataset()
     Intro(st.session_state.passaggi)

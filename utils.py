@@ -6,7 +6,7 @@ import altair as alt
 from pathlib import Path
 
 
-#se il dataset non è ancora caricato richiama read_dataset
+# controlla se il dataset non è ancora caricato e in caso richiama read_dataset
 def load_dataset():
     if "passaggi" not in st.session_state:
         st.session_state.passaggi = read_dataset("DatiPassaggi.csv.gz")
@@ -59,7 +59,7 @@ def sidebar_box_style(text, value, background_color="rgba(213,228,224,255)", tex
     </div>
     """
 
-#sidebar con info utili
+# sidebar con info utili
 def sidebar(table):
     if table.is_empty():
         st.sidebar.warning("Nessun dato disponibile nel dataset.")
@@ -85,7 +85,7 @@ def sidebar(table):
 
     #commento()
 
-#raggruppa per skipass
+# raggruppa per skipass
 def group_by_skipass(table):
     return (
         table
@@ -106,12 +106,12 @@ def group_skipass_wo_date(table):
         ])
     )
 
-#persone per ciascun giorno
+# persone per ciascun giorno
 def units_per_day(table):
     groupskipass=group_by_skipass(table)
     return groupskipass.group_by("Data").agg(pl.count("CODICEBIGLIETTO").alias("persone"))
 
-#passaggi per ciascun giorno
+# passaggi per ciascun giorno
 def pass_per_day(table):
     return (
         table
@@ -120,7 +120,7 @@ def pass_per_day(table):
         .sort("Data")
     )
 
-#tiene solo ora e poi raggruppa per le colonne passate
+# tiene solo ora e poi raggruppa per le colonne passate
 def group_by_hour(table, groupby):
     return (
         table
@@ -128,11 +128,11 @@ def group_by_hour(table, groupby):
         .group_by(groupby).agg(pl.len().alias("Passaggi"))
     )
 
-#conta numero modalità diverse di una variabile
+# conta numero modalità diverse di una variabile
 def conta_mod(table,var):
     return len(lista_modalita(table,var))
 
-#conta skipass per modalità (es. tipo skipass) di una variabile (o lista di variabili) passata
+# conta skipass per modalità (es. tipo skipass) di una variabile (o lista di variabili) passata
 def conta_tipo(table, var):
     tab_pers = group_skipass_wo_date(table)
     
@@ -146,12 +146,12 @@ def conta_tipo(table, var):
         .sort("numero")
     )
 
-#tabella più facile da vedere
+# tabella più facile da vedere
 def fancy_table(table):
     columns_to_select = [col for col in table.columns if "ID_" not in col.upper()]
     return table.select(columns_to_select)
 
-#commento sull'applicazione
+# commento sull'applicazione
 def commento():
     with st.sidebar.popover("Lascia un commento"):
         # st.write("funzione al momento disattivata")
@@ -166,20 +166,20 @@ def commento():
             else:
                 st.warning("Il campo è vuoto. Per favore, inserisci del testo.")
     
-#cambio formato immagine
+# cambio formato immagine
 def get_base64(file_path):
     with open(file_path, "rb") as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
-#tabella solo nome impianto e valle
+# tabella solo nome impianto e valle
 def minimal_table(table):
     tab = table.sort("DATAPASSAGGIO"
     ).with_columns(pl.Series("index", range(1,len(table)+1))
     ).select(["index","NOME_IMPIANTO","NOME_VALLEPOSIZIONEIMPIANTO","DATAPASSAGGIO"])
     return change_columns_title(tab)
 
-#divido colonna 
+# divido colonna 
 def tab_day_hour(table):
     return (
         table
@@ -187,7 +187,7 @@ def tab_day_hour(table):
         .sort("DATAPASSAGGIO")
     )
 
-#metti sfondo con url
+# metti sfondo con url
 def background(url):
     bg_image = get_base64(url)
 
@@ -202,7 +202,7 @@ def background(url):
         </style>
     """, unsafe_allow_html=True)
 
-#chiedi giorno e filtra tabella per giorno o totale
+# chiedi giorno e filtra tabella per giorno o totale
 def filter_day(table):
     tab=tab_day_hour(table)
     day_list=lista_modalita(tab,"Data")
@@ -304,7 +304,7 @@ def pies_chart_interactive(tab):
         .mark_bar()
         .encode(
             alt.X("NOME_TIPOPERSONA" + ":N", title=None),
-            alt.Y("numero", title=None),
+            alt.Y("numero",title=None),
             alt.Color("NOME_TIPOBIGLIETTO"+":N"),
             tooltip=alt.value(None),
         )

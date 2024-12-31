@@ -2,6 +2,7 @@ import streamlit as st
 import utils
 from pathlib import Path
 
+# funzione main della pagina, scrive titolo ecc
 def Welcome():
     file_path = Path("others") / "background_welcome.webp"
     utils.background(file_path)
@@ -16,7 +17,7 @@ def Welcome():
         """,
         unsafe_allow_html=True,
     )
-    tab1, tab2, tab3 = st.tabs(["Benvenuti", "Informazioni","Guida"])
+    tab1, tab2, tab3 = st.tabs(["Benvenuti", "Informazioni","Esempio Dataset"])
 
     with tab1:
         st.markdown(
@@ -91,7 +92,7 @@ def Welcome():
         <div class="box">
             <div class="header">ℹ️ Introduzione</div>
             <p style="color: black">
-                Introduzione generale: "Questa applicazione ti permette di esplorare, analizzare e visualizzare i dati relativi agli skipass per scoprire informazioni utili."
+                Questa applicazione offre strumenti avanzati per l'analisi dei passaggi sugli impianti sciistici. Grazie a grafici interattivi, puoi esplorare e approfondire analisi giornaliere e orarie relative a skipass, impianti e valli. Ideale per scoprire trend, preferenze dei visitatori e supportare decisioni strategiche come analisi di mercato.
             </p>
         </div>
         """,unsafe_allow_html=True)
@@ -102,14 +103,27 @@ def Welcome():
         <div class="box">
             <div class="header">📃 Informazioni sul dataset</div>
             <p style="color: black">
-                come ho ottenuto, dati che contiene (giorni)
+                Il dataset utilizzato rappresenta ogni passaggio su un impianto sciistico, corrispondente a un utilizzo di skipass da parte di una persona. Ogni riga contiene informazioni dettagliate sullo skipass, sull'impianto in cui è stato utilizzato e sull'orario del passaggio. Attualmente, il dataset copre un numero limitato di giorni, ma è possibile elaborare anche periodi diversi semplicemente aggiornando il dataframe.
+            </p>
+            <p style="color: black">
+                Questo subpull di dati è stato fornito in forma anonima dal federconsorzi <a href="https://www.dolomitisuperski.com/" target="_blank">Dolomiti Superski</a> al fine di poter implementare questa applicazione.
             </p>
         </div>
         """,unsafe_allow_html=True)
 
         st.divider()
+
+        st.markdown("""
+        <div class="box">
+            <div class="header">❓ Come iniziare</div>
+            <p style="color: black">
+                Si utilizzi la sidebar a sinistra per navigare tra le pagine dell'applicazione e accedere a tutte le analisi e funzionalità disponibili.
+            </p>
+        </div>
+        """,unsafe_allow_html=True)
     
     with tab3:
+        utils.load_dataset()
         st.markdown("""
             <style>
             .header {
@@ -134,11 +148,14 @@ def Welcome():
             </style>
         """, unsafe_allow_html=True)
 
+        
         st.markdown("""
         <div class="box">
-            <div class="header">❓ Cosa puoi fare qui?  come iniziare  lib usate</div>
+            <div class="header">Esempio di Dataset</div>
             <p style="color: black">
-                analisi orarie, giornaliere, vedere tue statistiche e info su tutto
+                Di seguito vengono riportate le prime 100 righe del dataset utilizzato nell'applicazione, come esempio rappresentativo dei dati analizzati.
             </p>
         </div>
         """,unsafe_allow_html=True)
+
+        st.dataframe(st.session_state.passaggi[:100])

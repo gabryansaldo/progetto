@@ -2,18 +2,17 @@ import streamlit as st
 import polars as pl
 import utils
 
-def Your_SkipassPage():
-    utils.load_dataset()
-    table=st.session_state.passaggi
+# fa selesionare skipass e analizza i passaggi e le statistiche relative
+def Skipass(table):
     st.title("🎟️ Cerca il tuo Skipass")
 
     st.write("""
-    In questa pagina puoi cercare il tuo skipass utilizzando il suo codice.
-    Una volta trovato, visualizzerai i dettagli e le statistiche delle tue attività.
+    In questa pagina è ossibile cercare il proprio skipass utilizzando il codice del biglietto.
+    Una volta trovato, verranno visualizzati i dettagli e le statistiche registrate.
     """)
 
     form1=st.form(key="your_skipass")
-    codice = form1.text_input("Inserisci il codice dello skipass:","161-166-84544", placeholder="Es. 161-166-84544")
+    codice = form1.text_input("Si inserisca il codice dello skipass:","161-166-84544", placeholder="Es. 161-166-84544")
     form1.markdown("*Altri esempi: &nbsp;&nbsp;&nbsp; 161-122-7872 &nbsp;&nbsp;&nbsp; 161-247-49204*", unsafe_allow_html=True)
     form1.form_submit_button("Submit")   # 161-122-7872   161-247-49204
     
@@ -41,8 +40,8 @@ def Your_SkipassPage():
         if len(ggsciati) > 1:   
             day_options=ggsciati
             day_options.insert(0,"Totale")
-            col1,col2,col3=testo.columns([0.4,0.3,0.3])
-            selected_day=col1.selectbox("Seleziona giorno da visulizzare o il totale:  ",options=day_options, index=len(day_options)-1)
+            col1,us2,us3=testo.columns([0.45,0.25,0.3])
+            selected_day=col1.selectbox("Si selezioni il giorno da visulizzare o il totale:  ",options=day_options, index=len(day_options)-1)
             selected_index = day_options.index(selected_day)
             for i in range(1,len(ggsciati)):
                 tab_days.append(skipass_data.filter(pl.col("Data")==ggsciati[i]))
@@ -101,3 +100,8 @@ def ticket_details(text,var,tab,index):
     col0.write("-")
     col1.write(f"**{text}:**")
     col2.write(utils.lista_modalita(tab[index],var)[0])
+
+# funzione main della pagina
+def Your_SkipassPage():
+    utils.load_dataset()
+    Skipass(st.session_state.passaggi)
