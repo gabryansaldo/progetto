@@ -90,9 +90,9 @@ def Welcome():
         
         st.markdown("""
         <div class="box">
-            <div class="header">ℹ️ Introduzione</div>
+            <div class="header">ℹ️ Descrizione</div>
             <p style="color: black">
-                Questa applicazione offre strumenti avanzati per l'analisi dei passaggi sugli impianti sciistici. Grazie a grafici interattivi, puoi esplorare e approfondire analisi giornaliere e orarie relative a skipass, impianti e valli. Ideale per scoprire trend, preferenze dei visitatori e supportare decisioni strategiche come analisi di mercato.
+                <b>Analisi Skipass</b> è un'applicazione interattiva realizzata con Python e librerie come Polars, Streamlit e Altair. L'app permette di esplorare i dati relativi ai passaggi degli skipass su impianti e valli. Grazie a grafici dinamici e analisi dettagliate, è possibile ottenere una visione approfondita dell'utilizzo degli skipass, utile per scopi personali o analisi di mercato.
             </p>
         </div>
         """,unsafe_allow_html=True)
@@ -101,9 +101,25 @@ def Welcome():
 
         st.markdown("""
         <div class="box">
+            <div class="header">🛠️ Funzionalità</div>
+            <p>
+                <ul style="color: black">
+                    <li><b>Analisi oraria e giornaliera:</b> Visualizza statistiche sulle giornate o sugli orari.</li>
+                    <li><b>Confronto tra valli e impianti:</b> Scopri quali sono i luoghi con maggiore affluenza.</li>
+                    <li><b>Grafici interattivi:</b> Seleziona, filtra e approfondisci i dati con diversi grafici.</li>
+                    <li><b>Esplorazione dello skipass:</b> Verifica i dettagli del tuo skipass e osserva le tue attività.</li>
+                </ul>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+
+        st.markdown("""
+        <div class="box">
             <div class="header">📃 Informazioni sul dataset</div>
             <p style="color: black">
-                Il dataset utilizzato rappresenta ogni passaggio su un impianto sciistico, corrispondente a un utilizzo di skipass da parte di una persona. Ogni riga contiene informazioni dettagliate sullo skipass, sull'impianto in cui è stato utilizzato e sull'orario del passaggio. Attualmente, il dataset copre un numero limitato di giorni, ma è possibile elaborare anche periodi diversi semplicemente aggiornando il dataframe.
+                Il dataset registra ogni passaggio effettuato nel comprensorio sciistico di <b>Dolomiti Superski</b>, includendo dettagli su skipass, impianto e orario. Copre un periodo limitato, ma può essere aggiornato per analizzare altri giorni.            
             </p>
             <p style="color: black">
                 Questo subpull di dati è stato fornito in forma anonima dal federconsorzi <a href="https://www.dolomitisuperski.com/" target="_blank">Dolomiti Superski</a> al fine di poter implementare questa applicazione.
@@ -117,7 +133,7 @@ def Welcome():
         <div class="box">
             <div class="header">❓ Come iniziare</div>
             <p style="color: black">
-                Si utilizzi la sidebar a sinistra per navigare tra le pagine dell'applicazione e accedere a tutte le analisi e funzionalità disponibili.
+                Si utilizzi la <b>sidebar</b> a sinistra per navigare tra le pagine dell'applicazione e accedere a tutte le analisi e funzionalità disponibili.
             </p>
         </div>
         """,unsafe_allow_html=True)
