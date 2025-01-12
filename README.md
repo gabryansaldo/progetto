@@ -21,7 +21,7 @@ L'applicazione può essere visualizzata e utilizzata in tre modi:
 
 2. Utilizzando il file START.py: Questo file automatizza l'esecuzione del comando sopra. Su Windows, è sufficiente fare doppio clic sul file per avviare rapidamente l'applicazione.
 
-3. Attraverso Streamlit Cloud: Grazie all'integrazione con GitHub, l'applicazione è accessibile direttamente online tramite il link: [progetto.streamlit.app](progetto.streamlit.app.).
+3. Attraverso Streamlit Cloud: Grazie all'integrazione con GitHub, l'applicazione è accessibile direttamente online tramite il link: [progetto.streamlit.app](https://progetto.streamlit.app/).
 
 
 Appena si accede all'applicazione, in alto è presente un tab "Informazioni". 
