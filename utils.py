@@ -20,7 +20,7 @@ def load_dataset():
 def read_dataset(url):
     try:
         passaggi = pl.read_csv(url, separator=",")
-        st.session_state.passaggi = CambiaFormatoData(passaggi)
+        st.session_state.passaggi = fancy_table(CambiaFormatoData(passaggi))
     except Exception as e:
         st.error(f"Errore durante il caricamento del dataset: {e}")
         return pl.DataFrame()

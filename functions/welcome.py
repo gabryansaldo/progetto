@@ -17,7 +17,7 @@ def Welcome():
         """,
         unsafe_allow_html=True,
     )
-    tab1, tab2, tab3 = st.tabs(["Benvenuti", "Informazioni","Esempio Dataset"])
+    tab1, tab2, tab3 = st.tabs(["Benvenuti", "Informazioni","Dataset"])
 
     with tab1:
         st.markdown(
@@ -117,20 +117,6 @@ def Welcome():
 
         st.markdown("""
         <div class="box">
-            <div class="header">📃 Informazioni sul dataset</div>
-            <p style="color: black">
-                Il dataset registra ogni passaggio effettuato nel comprensorio sciistico di <b>Dolomiti Superski</b>, includendo dettagli su skipass, impianto e orario. Copre un periodo limitato, ma può essere aggiornato per analizzare altri giorni.            
-            </p>
-            <p style="color: black">
-                Questo subpull di dati è stato fornito in forma anonima dal federconsorzi <a href="https://www.dolomitisuperski.com/" target="_blank">Dolomiti Superski</a> al fine di poter implementare questa applicazione.
-            </p>
-        </div>
-        """,unsafe_allow_html=True)
-
-        st.divider()
-
-        st.markdown("""
-        <div class="box">
             <div class="header">❓ Come iniziare</div>
             <p style="color: black">
                 Si utilizzi la <b>sidebar</b> a sinistra per navigare tra le pagine dell'applicazione e accedere a tutte le analisi e funzionalità disponibili.
@@ -164,13 +150,35 @@ def Welcome():
             </style>
         """, unsafe_allow_html=True)
 
-        
         st.markdown("""
         <div class="box">
-            <div class="header">Esempio di Dataset</div>
+            <div class="header">📃 Informazioni sul dataset</div>
+            <p style="color: black">
+                Il dataset registra ogni passaggio effettuato nel comprensorio sciistico di <b>Dolomiti Superski</b>, includendo dettagli su skipass, impianto e orario. Copre un periodo limitato, ma può essere aggiornato per analizzare altri giorni.            
+            </p>
+            <p style="color: black">
+                Questo subpull di dati è stato fornito in forma anonima dal federconsorzi <a href="https://www.dolomitisuperski.com/" target="_blank">Dolomiti Superski</a> al fine di poter implementare questa applicazione.
+            </p>
+        </div>
+        """,unsafe_allow_html=True)
+
+        st.divider()
+
+        st.markdown("""
+        <div class="box">
+            <div class="header">🔧 Preprocessing</div>
+            <p style="color: black">
+                Il preprocessing applicato al dataframe prevede la rimozione delle colonne non rilevanti per l'analisi, come quelle contenenti ID, e la conversione del formato della colonna DATAPASSAGGIO da stringa a tipo Datetime. Le successive operazioni necessarie per generare grafici e condurre analisi non modificano il dataframe originale ma creano nuovi dataframes, che sintetizzano le informazioni del dataset di partenza.            </p>
+        </div>
+        """,unsafe_allow_html=True)
+
+        st.divider()
+
+        st.markdown("""
+        <div class="box">
+            <div class="header">🔮 Esempio del Dataset</div>
             <p style="color: black">
                 Di seguito vengono riportate le prime 100 righe del dataset utilizzato nell'applicazione, come esempio rappresentativo dei dati analizzati.
-            </p>
         </div>
         """,unsafe_allow_html=True)
 
