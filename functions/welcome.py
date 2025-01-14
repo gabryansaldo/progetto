@@ -184,7 +184,7 @@ def Welcome():
         <div class="box">
             <div class="header">🔮 Esempio del Dataset</div>
             <p style="color: black">
-                Di seguito vengono riportate le prime 100 righe del dataset utilizzato nell'applicazione, come esempio rappresentativo dei dati analizzati.
+                Di seguito vengono riportate le prime 100 righe del dataset utilizzato nell'applicazione, dopo il preprocessing, come esempio rappresentativo dei dati analizzati.
         </div>
         """,unsafe_allow_html=True)
 
