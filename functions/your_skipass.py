@@ -1,8 +1,15 @@
+# your_skipass.py
+# Gestisce la pagina che permette agli utenti di cercare un codice di skipass e visualizzare le statistiche
+# e i dettagli relativi ai passaggi. Include funzionalità per analizzare i passaggi per giorno, mostrare i 
+# dettagli del biglietto e visualizzare i passaggi in dettaglio.
+
+
 import streamlit as st
 import polars as pl
 import utils
 
-# fa selesionare skipass e analizza i passaggi e le statistiche relative
+
+# Funzione che gestisce la visualizzazione e l'analisi dei passaggi per uno skipass specifico, permettendo la selezione di un codice e mostrando statistiche e dettagli relativi.
 def Skipass(table):
     st.title("🎟️ Cerca il tuo Skipass")
 
@@ -16,9 +23,8 @@ def Skipass(table):
     form1.markdown("*Altri esempi: &nbsp;&nbsp;&nbsp; 161-122-7872 &nbsp;&nbsp;&nbsp; 161-247-49204*", unsafe_allow_html=True)
     form1.form_submit_button("Submit")   # 161-122-7872   161-247-49204
     
-    skipass_data = utils.fancy_table(table.filter(
-            pl.col("CODICEBIGLIETTO") == codice
-        )
+    skipass_data = table.filter(
+        pl.col("CODICEBIGLIETTO") == codice
     )
 
     if skipass_data.is_empty():
@@ -94,14 +100,14 @@ def Skipass(table):
         with dett_exp:
             dett_exp.dataframe(utils.minimal_table(tab_days[selected_index]),use_container_width=True)
 
-# per risparmiare righe nello scrivere i dettagli
+# Funzione di supporto che visualizza i dettagli relativi a una variabile specifica (ad esempio tipo biglietto, tipo persona) per lo skipass selezionato.
 def ticket_details(text,var,tab,index):
     spaz,col0,col1,col2=st.columns([0.03,0.02,0.3,0.65])
     col0.write("-")
     col1.write(f"**{text}:**")
     col2.write(utils.lista_modalita(tab[index],var)[0])
 
-# funzione main della pagina
+# Funzione principale della pagina che carica i dati e invoca la funzione Skipass per visualizzare i dettagli relativi allo skipass.
 def Your_SkipassPage():
     utils.load_dataset()
     Skipass(st.session_state.passaggi)

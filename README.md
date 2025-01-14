@@ -1,13 +1,7 @@
 ## STRUTTURA
 
----
-
 ### Files
-Il file principale, app.py, rappresenta il punto di ingresso dell'applicazione e gestisce la navigazione tra le diverse pagine. 
-Le funzioni di utilità generali sono raccolte nel file utils.py, mentre i file relativi alle quattro pagine principali dell'app (daily_statistics, hourly_analysis, welcome e your_skipass) sono contenuti nella cartella functions. 
-La cartella others, invece, contiene elementi accessori utili al funzionamento dell'applicazione.
-
-Nella directory principale si trovano inoltre il dataset DatiPassaggi.csv.gz su cui si basa l'applicazione e un file chiamato START.py, che consente un avvio più rapido.
+Il file principale app.py gestisce la navigazione tra le pagine dell'app. Le funzioni generali sono in utils.py, mentre i file delle quattro pagine si trovano nella cartella functions. La cartella others contiene elementi accessori. Nella directory principale ci sono anche il dataset DatiPassaggi.csv.gz e il file START.py per un avvio più rapido.
 
 ---
 
@@ -17,8 +11,6 @@ L'intero progetto è stato sviluppato utilizzando Git per il controllo di versio
 ---
 
 ## COME INIZIARE
-
----
 
 ### Avvio
 L'applicazione può essere visualizzata e utilizzata in tre modi:
@@ -30,7 +22,7 @@ L'applicazione può essere visualizzata e utilizzata in tre modi:
 
 2. Utilizzando il file START.py: Questo file automatizza l'esecuzione del comando sopra. Su Windows, è sufficiente fare doppio clic sul file per avviare rapidamente l'applicazione.
 
-3. Attraverso Streamlit Cloud: Grazie all'integrazione con GitHub, l'applicazione è accessibile direttamente online tramite il link: [progetto.streamlit.app](https://progetto.streamlit.app/).
+3. Attraverso Streamlit Cloud: Grazie all'integrazione con GitHub, l'applicazione è accessibile direttamente online tramite il link: [progetto.streamlit.app](https://progetto.streamlit.app/). All'avvio dell'applicazione, potrebbe essere richiesto di riavviarla, poiché, dopo un certo periodo di inattività, va in stand-by. Il "risveglio" avviene in meno di un minuto.
 
 ---
 
@@ -40,7 +32,14 @@ Questo tab guida l'utente a una sezione dedicata, dove sono disponibili dettagli
 
 ---
 
+## INFORMAZIONI
+
+Il dataset, le funzionalità dell'app e il preprocessing applicato sono descritti all'interno dell'app stessa, nelle sezioni (tabs) accessibili dalla parte superiore della pagina iniziale.
+
+---
+
 ## BIBLIOGRAFIA
+
 Fonti utilizzate:
 
 - https://docs.streamlit.io/

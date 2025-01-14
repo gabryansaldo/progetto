@@ -1,16 +1,21 @@
+# hourly_analysis.py
+# Questo file gestisce l'analisi oraria dei dati, visualizzando statistiche relative ai passaggi degli skipass su base oraria, con grafici interattivi e confronti tra giorni.
+
+
 import polars as pl
 import streamlit as st
 import altair as alt
 import utils
 
-#dizionario opzioni scelta
+
+# Funzione che restituisce un dizionario con alias più leggibili per 2 colonne del dataset
 def get_opzioni_map():
     return {
         "Valle": "NOME_VALLEPOSIZIONEIMPIANTO",
         "Impianto": "NOME_IMPIANTO",
     }
 
-# scelgo se vedere totale o solo delle cose selezionate
+# Funzione che consente di selezionare se visualizzare il totale dei passaggi o solo quelli relativi a specifici impianti e valli. Gestisce la visualizzazione delle statistiche orarie.
 def selezione_pass(table):
     st.title("🕓 Analisi dei Passaggi Orari")
     st.markdown("""
@@ -43,7 +48,7 @@ def selezione_pass(table):
     table = table.select(lista_colonne_utili)
     hourly_pass_vi(table,opzioni_map)
 
-# divido per orario
+# Funzione che calcola e visualizza il numero di passaggi totali per ogni ora, ordinati per ora. Mostra anche un grafico a linea interattivo.
 def hourly_pass_T(table):
     result = utils.group_by_hour(table,"ora").sort("ora")
     if not result.is_empty():
@@ -60,7 +65,7 @@ def hourly_pass_T(table):
         )
         col2.altair_chart(chart, use_container_width=True)
 
-#divido per orario e valle/impianto
+# Funzione che raggruppa i passaggi per ora, con opzioni per visualizzare i dati per valle o impianto. Mostra un heatmap e un grafico a linee interattivo.
 def hourly_pass_vi(table,opzioni_map):
     st.subheader("Raggruppamento per Valle o Impianto")
     st.markdown("""
@@ -124,7 +129,7 @@ def hourly_pass_vi(table,opzioni_map):
         else:
             st.info("Si selezionino degli impianti per visualizzare i grafici")
 
-# grafico a linee con interattività
+# Funzione che crea un grafico a linee interattivo per visualizzare il numero di passaggi orari per valle o impianto.
 def line_graph(raggr,c,c_aka):
     highlight = alt.selection_point(fields=[c], bind="legend")
     #highlight = alt.selection_point(fields=[c], on="click", empty="none", name="Highlight")
@@ -147,7 +152,7 @@ def line_graph(raggr,c,c_aka):
     contL.write(f"Questo **grafico a linee** mostra l'andamento dei passaggi durante la giornata per ciascuna {c_aka}. L'asse orizzontale rappresenta l'ora, mentre l'asse verticale mostra il numero di passaggi. Le linee colorate indicano le diverse {c_aka}, consentendo di confrontare l'affluenza nel corso della giornata, si selezioni una {c_aka} dalla legenda per una visualizzazione più chiara.")
     contL.altair_chart(chart, use_container_width=True)
 
-# heatmap per affluenza oraria per diverse valli/impianti..
+# Funzione che crea un heatmap per visualizzare la distribuzione percentuale dei passaggi orari tra diverse valli o impianti.
 def heatmap(raggr,str):
     var=get_opzioni_map()[str]
     result = (
@@ -200,7 +205,7 @@ def heatmap(raggr,str):
         contH.write("Dalle osservazioni della heatmap, emerge che in tutte le valli le ore più affollate si concentrano tra le 9:00 e le 11:00. Questo periodo rappresenta le fasce orarie in cui si registra il picco di passaggi, indicando un maggiore afflusso di visitatori durante le prime ore della giornata")
     st.write("")
 
-#funzione main della pagina
+# Funzione principale della pagina, che carica i dati e avvia l'analisi dei passaggi orari.
 def Hourly_Analysis():
     utils.load_dataset()
     selezione_pass(st.session_state.passaggi)

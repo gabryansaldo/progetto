@@ -1,8 +1,14 @@
+# welcome.py
+# Gestisce la pagina di benvenuto dell'applicazione. Include una descrizione generale 
+# dell'app, informazioni sul dataset, le funzionalità disponibili e come utilizzare l'app.
+
+
 import streamlit as st
 import utils
 from pathlib import Path
 
-# funzione main della pagina, scrive titolo ecc
+
+# Funzione della pagina welcome, mostra nell'applicazione la homepage e le informazioni utili
 def Welcome():
     file_path = Path("others") / "background_welcome.webp"
     utils.background(file_path)

@@ -1,3 +1,9 @@
+# utils.py
+# Contiene funzioni di supporto utilizzate in altre parti dell'applicazione
+# per gestire dati, creare grafici e semplificare operazioni come la modifica 
+# dei nomi delle colonne e l'applicazione di filtri.
+
+
 import polars as pl
 import streamlit as st
 import base64
@@ -6,7 +12,7 @@ import altair as alt
 from pathlib import Path
 
 
-# controlla se il dataset non è ancora caricato e in caso richiama read_dataset
+# Carica il dataset nella sessione se non è già presente e verifica che non sia vuoto
 def load_dataset():
     if "passaggi" not in st.session_state:
         st.session_state.passaggi = read_dataset("DatiPassaggi.csv.gz")
@@ -15,7 +21,7 @@ def load_dataset():
         return False
     return True
 
-#importo il dataset
+# Importa il dataset da un URL, lo processa e lo salva
 @st.cache_data
 def read_dataset(url):
     try:
@@ -26,20 +32,20 @@ def read_dataset(url):
         return pl.DataFrame()
     return st.session_state.passaggi
 
-#cambio formato di DATAPASSAGGIO da str a Datetime
+# Cambio formato di DATAPASSAGGIO da str a Datetime
 def CambiaFormatoData(table):
     return table.with_columns(
         pl.col("DATAPASSAGGIO").str.strptime(pl.Datetime)
     )
 
-# funzione che ritorna una lista contenente le modalità di una data variabile (colonna)
+# Ritorna una lista con le modalità uniche ordinate di una colonna specifica del dataset
 def lista_modalita(table,variabile):
     if variabile not in table.columns:
         st.warning(f"La colonna '{variabile}' non esiste nel dataset.")
         return []
     return table.select(variabile).unique().sort(variabile).to_series().to_list()
 
-# definisci stile per "scatole" nella sidebar
+# Definizione stile per "scatole" nella sidebar
 def sidebar_box_style(text, value, background_color="rgba(213,228,224,255)", text_color="#2C3E50", value_color="rgb(42, 31, 165)"):
     return f"""
     <div style="
@@ -59,7 +65,7 @@ def sidebar_box_style(text, value, background_color="rgba(213,228,224,255)", tex
     </div>
     """
 
-# sidebar con info utili
+# Crea una sidebar con informazioni utili sul dataset, come date e conteggi
 def sidebar(table):
     if table.is_empty():
         st.sidebar.warning("Nessun dato disponibile nel dataset.")
@@ -85,7 +91,7 @@ def sidebar(table):
 
     #commento()
 
-# raggruppa per skipass
+# Raggruppa il dataset per skipass e calcola il numero di passaggi per ogni combinazione di attributi
 def group_by_skipass(table):
     return (
         table
@@ -95,7 +101,7 @@ def group_by_skipass(table):
         .sort(["passaggi"], descending=[True])   
     )
 
-# raggruppa per skipass e non la data
+# Raggruppa il dataset per skipass senza considerare la data e calcola il totale dei passaggi
 def group_skipass_wo_date(table):
     tab=group_by_skipass(table)
     return (
@@ -106,12 +112,12 @@ def group_skipass_wo_date(table):
         ])
     )
 
-# persone per ciascun giorno
+# Calcola il numero di persone per ciascun giorno
 def units_per_day(table):
     groupskipass=group_by_skipass(table)
     return groupskipass.group_by("Data").agg(pl.count("CODICEBIGLIETTO").alias("persone"))
 
-# passaggi per ciascun giorno
+# Calcola il numero di passaggi per ciascun giorno
 def pass_per_day(table):
     return (
         table
@@ -120,7 +126,7 @@ def pass_per_day(table):
         .sort("Data")
     )
 
-# tiene solo ora e poi raggruppa per le colonne passate
+# Estrae l'ora da una colonna e raggruppa per le colonne specificate, calcolando il numero di passaggi
 def group_by_hour(table, groupby):
     return (
         table
@@ -128,11 +134,11 @@ def group_by_hour(table, groupby):
         .group_by(groupby).agg(pl.len().alias("Passaggi"))
     )
 
-# conta numero modalità diverse di una variabile
+# Conta il numero di modalità uniche di una variabile (colonna) nel dataset
 def conta_mod(table,var):
     return len(lista_modalita(table,var))
 
-# conta skipass per modalità (es. tipo skipass) di una variabile (o lista di variabili) passata
+# Conta il numero di skipass per ciascuna modalità di una variabile (o lista di variabili) specificata
 def conta_tipo(table, var):
     tab_pers = group_skipass_wo_date(table)
     
@@ -146,12 +152,13 @@ def conta_tipo(table, var):
         .sort("numero")
     )
 
-# tabella più facile da vedere
+# Ritorna la tabella senza le colonne ID, utilizzata in read_dataset per il preprocessing
 def fancy_table(table):
     columns_to_select = [col for col in table.columns if "ID_" not in col.upper()]
     return table.select(columns_to_select)
 
-# commento sull'applicazione
+# Permette agli utenti di lasciare un commento e una valutazione tramite la sidebar
+## Funzione inutilizzata
 def commento():
     with st.sidebar.popover("Lascia un commento"):
         # st.write("funzione al momento disattivata")
@@ -166,20 +173,20 @@ def commento():
             else:
                 st.warning("Il campo è vuoto. Per favore, inserisci del testo.")
     
-# cambio formato immagine
+# Converte un'immagine in formato base64
 def get_base64(file_path):
     with open(file_path, "rb") as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
-# tabella solo nome impianto e valle
+# Crea una tabella con solo il nome dell'impianto e della valle, aggiungendo un indice
 def minimal_table(table):
     tab = table.sort("DATAPASSAGGIO"
     ).with_columns(pl.Series("index", range(1,len(table)+1))
     ).select(["index","NOME_IMPIANTO","NOME_VALLEPOSIZIONEIMPIANTO","DATAPASSAGGIO"])
     return change_columns_title(tab)
 
-# divido colonna 
+# Crea la colonna data (anno-mese-giorno) da "DATAPASSAGGIO"
 def tab_day_hour(table):
     return (
         table
@@ -187,7 +194,7 @@ def tab_day_hour(table):
         .sort("DATAPASSAGGIO")
     )
 
-# metti sfondo con url
+# Imposta uno sfondo personalizzato per l'app utilizzando un'immagine da URL
 def background(url):
     bg_image = get_base64(url)
 
@@ -202,7 +209,7 @@ def background(url):
         </style>
     """, unsafe_allow_html=True)
 
-# chiedi giorno e filtra tabella per giorno o totale
+# Chiede all'utente di selezionare un giorno e filtra la tabella in base alla selezione o restituisce il totale
 def filter_day(table):
     tab=tab_day_hour(table)
     day_list=lista_modalita(tab,"Data")
@@ -214,7 +221,7 @@ def filter_day(table):
     else:
         return tab.filter(pl.col("Data")==selected_day)
 
-# grafico tipo persone
+# Crea un grafico a torta per visualizzare la distribuzione delle persone in base a una variabile
 def pies_chart(tab,raggr):
     alias=create_col_map()[raggr]
 
@@ -254,7 +261,7 @@ def pies_chart(tab,raggr):
 
     return base_pie + text_pie + total_text
 
-# grafico interattivo persone e biglietti
+# Crea un grafico a torta interattivo per visualizzare la distribuzione delle persone per tipo di biglietto, con un grafico a barre interattivo
 def pies_chart_interactive(tab):
     alias=create_col_map()["NOME_TIPOBIGLIETTO"]
 
@@ -316,7 +323,7 @@ def pies_chart_interactive(tab):
 
     return base_pie + text_pie + total_text | bar_chart
 
-# raggruppa giorni da 7 in poi
+# Raggruppa i giorni superiori o uguali a 7 nella colonna "NOME_TIPOBIGLIETTO" e aggrega per tipo di biglietto e persona
 def raggr_7GG(table):
     table = table.with_columns(
         pl.when(
@@ -338,18 +345,18 @@ def raggr_7GG(table):
 
     return table.rename({"NOME_TIPOBIGLIETTO_RAGGR": "NOME_TIPOBIGLIETTO"})
     
-# fornisce grafico a torta e a barre interattivo
+# Fornisce un grafico a torta e a barre interattivo per visualizzare la distribuzione dei tipi di persone e biglietti
 def chart_tipo_interatt(table):
     raggr=["NOME_TIPOPERSONA","NOME_TIPOBIGLIETTO"]
     table=raggr_7GG(conta_tipo(table,raggr))
     return pies_chart_interactive(table)
 
-# grafico a torta per una variabile
+# Fornisce un grafico a torta per visualizzare la distribuzione di una variabile specificata
 def chart_tipo(table,raggr):
     table=conta_tipo(table,raggr)
     return pies_chart(table,raggr)
 
-# grafico per podio passaggi
+# Crea un grafico a barre che raffiugura un podio e informazioni aggiuntive per i top 3 in base ai passaggi
 def podio(tab):
     podio = {
     "altezza": [3,2,1],
@@ -416,7 +423,7 @@ def podio(tab):
 
     return podium_chart + pass_chart + emoji_chart + skipass_chart
 
-# dizionario con alias delle colonne
+# Crea un dizionario con alias più leggibili per le colonne del dataset
 def create_col_map():
     return {
         "CODICEBIGLIETTO": "Codice biglietto",
@@ -437,7 +444,7 @@ def create_col_map():
         "NOME_TIPOPERSONA": "Tipo persona"
     }
 
-# cambia il nome delle colonne della tabella passata in quello definito nella funzione create_col_map
+# Cambia i nomi delle colonne della tabella in base agli alias definiti nella funzione create_col_map
 def change_columns_title(table):
     map=create_col_map()
     columns = {}

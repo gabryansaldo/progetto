@@ -1,10 +1,16 @@
+# daily_statistic.py
+# Questo file gestisce l'analisi statistica giornaliera dei passaggi degli skipass, 
+# fornendo informazioni sui passaggi totali, le tipologie di biglietto e persona, e visualizzando 
+# le valli e impianti con maggiore affluenza tramite grafici interattivi.
+
+
 import streamlit as st
 import utils
 import altair as alt
 import polars as pl
 
 
-# grafico a barre per migliori 5 per passaggi
+# Funzione che crea un grafico a barre mostrando i primi 5 gruppi (secondo un raggruppamento dato) con il maggior numero di passaggi, ordinati in base al totale dei passaggi.
 def chart_top5(table, group_col, value_col,):
     grouped = (
         table
@@ -27,7 +33,7 @@ def chart_top5(table, group_col, value_col,):
     )
     return chart
 
-# prima parte della pagina (introduzione)
+# Funzione che fornisce un'introduzione generale alla pagina, mostrando informazioni sul massimo numero di persone e passaggi registrati in un giorno.
 def Intro(table):
     st.title("📅 **Analisi dei Passaggi Giornalieri**")
     st.write("Esplora i dati relativi ai passaggi giornalieri degli skipass. Si può selezionare una data specifica per osservare i dettagli di quel giorno oppure visualizzare un'analisi complessiva di tutti i passaggi registrati.")
@@ -56,7 +62,7 @@ def Intro(table):
     col3.write("Registrato il:")
     col4.write(f"*{max_data_pas}*")
     
-# paragrafo statische del giorno/totale selzionato
+# Funzione che visualizza le statistiche relative al numero di persone, impianti aperti, passaggi e passaggi medi per persona.
 def Statistic(table):
     st.header("Statistiche")
 
@@ -91,7 +97,7 @@ def Statistic(table):
     spaz,col=st.columns([0.03,0.97])
     col.write("Si osserva che la proporzione delle tipologie di persone che acquistano un determinato tipo di biglietto rimane generalmente costante. Tuttavia, i Kid e i Senior mostrano una preferenza maggiore per il biglietto stagionale rispetto ad altre categorie, che invece non presentano variazioni significative in base al tipo di biglietto scelto.")
 
-# clasifica persone con più passaggi con dataframe e podio
+# Funzione che visualizza la classifica dei 10 skipass con il maggior numero di passaggi, e i grafici delle valli e impianti con più passaggi.
 def Top(table):
     st.header("Skipass con più passaggi")
     st.write("Classifica dei 10 skipass che hanno registrato il maggior numero di passaggi in un giorno nel periodo selezionato.")
@@ -111,7 +117,7 @@ def Top(table):
     col1.altair_chart(chart_top5(utils.change_columns_title(table),"Valle","Data passaggio"),use_container_width=True)
     col2.altair_chart(chart_top5(utils.change_columns_title(table),"Impianto","Data passaggio"),use_container_width=True)
 
-# main della pagina, richiamo altre funzioni
+# Funzione principale della pagina, che richiama le altre funzioni per visualizzare l'analisi dei passaggi giornalieri.
 def Daily_Statistics():
     utils.load_dataset()
     Intro(st.session_state.passaggi)
